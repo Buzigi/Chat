@@ -1,0 +1,53 @@
+﻿<Window x:Class="Chat.UI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Chat.UI"
+        xmlns:controls="clr-namespace:Chat.UI.UserControls"
+        mc:Ignorable="d"
+        Title="Sela TalkBack" Height="600" Width="550"
+        ResizeMode="NoResize"
+        Icon="../../Icons/Sela_Icon.ico"
+        Closed="Window_Closed">
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="10*"/>
+            <ColumnDefinition Width="490*"/>
+            <ColumnDefinition Width="10*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="10*"/>
+            <RowDefinition Height="510*"/>
+            <RowDefinition Height="10*"/>
+        </Grid.RowDefinitions>
+        <Menu Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3">
+            <MenuItem  Name="connection_mi" Header="_Connect" Click="Connect_mi_Click"/>
+            <MenuItem Header="_Actions" Name="actions_mi"  IsEnabled="False">
+                <MenuItem Header="_Send Message" Name="sendMessage_mi" Click="sendMessage_mi_Click"/>
+                <MenuItem Header="_Play Backgammon" Name="play_mi"/>
+            </MenuItem>
+            <MenuItem Header="_Help">
+                <MenuItem Header="_How to play" />
+                <MenuItem Header="_About" />
+            </MenuItem>
+        </Menu>
+        <ContentControl Grid.Row="2" Grid.Column="1">
+            <ContentControl.Style>
+                <Style>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding UserControlToDisplay}" Value="1">
+                            <Setter Property="ContentControl.ContentTemplate" Value="{StaticResource WelcomeControl}"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding UserControlToDisplay}" Value="2">
+                            <Setter Property="ContentControl.ContentTemplate" Value="{StaticResource ContactControl}"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ContentControl.Style>
+        </ContentControl>
+    </Grid>
+
+</Window>
