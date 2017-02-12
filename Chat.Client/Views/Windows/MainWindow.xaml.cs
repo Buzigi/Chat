@@ -31,6 +31,9 @@ namespace Chat.UI
         //Fires event when the Send Message menu item is clicked
         public static event EventHandler OpenChatEvent;
 
+        //Fires event when the Play Backgammon menu item is clicked
+        public static event EventHandler PlayEvent;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -87,6 +90,11 @@ namespace Chat.UI
         private void Window_Closed(object sender, EventArgs e)
         {
             Disconnect_mi_Click(null, null);
+        }
+
+        private void play_mi_Click(object sender, RoutedEventArgs e)
+        {
+            PlayEvent?.Invoke(null, null);
         }
     }
 

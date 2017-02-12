@@ -55,6 +55,9 @@ namespace Chat.UI.UserControls
             //Game request recieved
             ChatResult.GameRequestedEvent += ChatResult_GameRequestedEvent;
 
+            //Play Backgammon menu item clicked
+            MainWindow.PlayEvent += MenuItem_PlayEvent;
+
             _openChatsList = new Dictionary<string, ChatWindow>();
 
         }
@@ -137,12 +140,14 @@ namespace Chat.UI.UserControls
             }
         }
 
+        //Open chat menu item was clicked
         private void MenuItem_OpenChatEvent(object sender, EventArgs e)
         {
             chat_b_Click(null, null);
 
         }
 
+        //Open chat button was clicked
         private void chat_b_Click(object sender, RoutedEventArgs e)
         {
             string contact = (string)online_lb.SelectedItem;
@@ -154,6 +159,7 @@ namespace Chat.UI.UserControls
 
         }
 
+        //Open game button clicked
         private void backgammon_b_Click(object sender, RoutedEventArgs e)
         {
             string contact = (string)online_lb.SelectedItem;
@@ -165,12 +171,14 @@ namespace Chat.UI.UserControls
             }
         }
         
+        //Chat window was closed
         private void Chat_WindowClosedEvent(object sender, EventArgs e)
         {
             string contact = ((ChatEventArgs)e).contact;
             _openChatsList.Remove(contact);
         }
 
+        //A game request from a contact was recieved
         private void ChatResult_GameRequestedEvent(object sender, EventArgs e)
         {
             string contact = ((ContactChangeEventArgs)e).Contact;
@@ -178,6 +186,7 @@ namespace Chat.UI.UserControls
                                                       $"Game Request from {contact}", MessageBoxButton.YesNo);
         }
 
+        //List of all the messages between user and contact was recieved
         private void ChatResult_MessagesListRecievedEvent(object sender, EventArgs e)
         {
             string from = ((MessageListsEventArgs)e).Sender;
@@ -190,7 +199,11 @@ namespace Chat.UI.UserControls
             }
 
         }
-
+        
+        private void MenuItem_PlayEvent(object sender, EventArgs e)
+        {
+            backgammon_b_Click(null, null);
+        }
 
         #endregion Event Handling
 
@@ -219,14 +232,12 @@ namespace Chat.UI.UserControls
         
         private void ActivateChat(string contact)
         {
+            //Chat window with contact is not open
             if (!_openChatsList.ContainsKey(contact))
             {
-                ChatWindow chat = new ChatWindow(contact);
-                _openChatsList.Add(contact, chat);
-                chat.Show();
-                chat.WindowClosedEvent += Chat_WindowClosedEvent;
+                OpenChatWindow(contact, false);
             }
-            //Chat already open
+            //Chat (or game) window already open
             else
             {
                 _openChatsList[contact].Activate();
@@ -240,19 +251,42 @@ namespace Chat.UI.UserControls
 
         private void ActivateGame(string contact)
         {
-            if (!_openGamesList.ContainsKey(contact))
+            ChatWindow window;
+            //Chat or game window with contact is not open
+            if (!_openChatsList.ContainsKey(contact))
             {
-                Backgammon.UI.MainWindow game = new Backgammon.UI.MainWindow(_mainVM.UserName,contact);
-                _openGamesList.Add(contact, game);
-                game.Show();
+                OpenChatWindow(contact, true);
                 //game.WindowClosedEvent += Chat_WindowClosedEvent;
             }
-            //Chat already open
+            //Chat or game already open
             else
             {
-                _openGamesList[contact].Activate();
+                window = _openChatsList[contact];
+                //Chat window open
+                if (!window.IsGame)
+                {
+                    Chat_WindowClosedEvent(null, new ChatEventArgs() { contact = contact });
+                    OpenChatWindow(contact, true);
+                }
+
+                //game is open 
+                else
+                {
+                    _openChatsList[contact].Activate();
+                }
+                
             }
         }
+
+        private void OpenChatWindow(string contact, bool isGame)
+        {
+            ChatWindow chat = new ChatWindow(contact);
+            chat.IsGame = isGame;
+            _openChatsList.Add(contact, chat);
+            chat.Show();
+            chat.WindowClosedEvent += Chat_WindowClosedEvent;
+        }
+
         #endregion Private Methods
 
 

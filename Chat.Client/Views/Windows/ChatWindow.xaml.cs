@@ -24,13 +24,17 @@ namespace Chat.UI.UserControls
 
         string _contact;
 
+        public bool IsGame { get; set; }
+
+
         public event EventHandler WindowClosedEvent;
 
-        public ChatWindow(string contact)
+        public ChatWindow(string contact, bool isGame = false)
         {
             InitializeComponent();
             _mainVM = MainVM.Instance;
             _contact = contact;
+            IsGame = isGame;
             
             this.Title = $"{_mainVM.UserName} - Chat with {_contact}";
             chatControl_cc.Content = new ChatScreen(_mainVM.UserName,contact);

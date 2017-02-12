@@ -27,7 +27,7 @@
             <MenuItem  Name="connection_mi" Header="_Connect" Click="Connect_mi_Click"/>
             <MenuItem Header="_Actions" Name="actions_mi"  IsEnabled="False">
                 <MenuItem Header="_Send Message" Name="sendMessage_mi" Click="sendMessage_mi_Click"/>
-                <MenuItem Header="_Play Backgammon" Name="play_mi"/>
+                <MenuItem Header="_Play Backgammon" Name="play_mi" Click="play_mi_Click"/>
             </MenuItem>
             <MenuItem Header="_Help">
                 <MenuItem Header="_How to play" />
