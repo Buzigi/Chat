@@ -42,7 +42,7 @@ namespace Contracts
         Guid? RequestNewGame(string userName, string contact);
 
         [OperationContract]
-        Guid? AcceptGame(string userName, string contact);
+        Guid? AcceptGame(string userName, string contact, bool isAccepted);
 
         [OperationContract(IsOneWay = true)]
         void EndGame(Guid session);

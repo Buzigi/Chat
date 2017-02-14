@@ -159,7 +159,7 @@ namespace Service
             try
             {
                 DoWorkDelegate del = SendMessagesListToClient;
-                return OpenSession(sender, reciever,del);
+                return OpenSession(sender, reciever, del);
             }
             catch (Exception e)
             {
@@ -169,7 +169,7 @@ namespace Service
             }
 
         }
-        
+
         public void EndChat(Guid session)
         //Ends a chat session with userName
         {
@@ -185,7 +185,7 @@ namespace Service
                 Report(e.Message, LogLevel.Exception);
             }
         }
-        
+
         public bool SendMessage(Guid session, string text)
         {
             try
@@ -209,7 +209,7 @@ namespace Service
                     SendMessagesListToClient(reciever, sender);
                     Report($"Message recieved by {reciever}", LogLevel.Information);
                     return true;
-                    
+
                 }
                 //Reciever offline
                 {
@@ -250,16 +250,35 @@ namespace Service
         public void EndGame(Guid session)
         {
             throw new NotImplementedException();
-        }        
+        }
 
         public bool RestartGame(Guid session)
         {
             throw new NotImplementedException();
         }
 
-        public Guid? AcceptGame(string userName, string contact)
+        public Guid? AcceptGame(string userName, string contact, bool isAccepted)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (isAccepted)
+                {
+                    DoWorkDelegate del = SendGameResponseToClient;
+                    Report($"Game response sent to {contact}", LogLevel.Information);
+                    return OpenSession(userName, contact, del);
+                }
+                else
+                {
+                    _clients[contact].NewGameResponse(userName, false);
+                    return null;
+                }
+            }
+            catch (Exception e)
+            {
+                Report($"Could not send response to {contact}", LogLevel.Exception);
+                Report(e.Message, LogLevel.Exception);
+                return null;
+            }
         }
 
         public bool SendMove(Guid session, int pieceIndex, int moves)
@@ -320,7 +339,12 @@ namespace Service
         {
             _clients[reciever].GameRequested(sender);
         }
-        
+
+        private void SendGameResponseToClient(string sender, string reciever)
+        {
+            _clients[reciever].NewGameResponse(sender, true);
+        }
+
         private Guid? OpenSession(string sender, string reciever, DoWorkDelegate del)
         {
             if (_clients.ContainsKey(reciever))
@@ -340,7 +364,7 @@ namespace Service
                 return null;
             }
         }
-        
+
         #endregion Private Methods
 
     }

@@ -1,4 +1,5 @@
-﻿using Chat.UI.VM;
+﻿using Chat.Client.VM;
+using Chat.UI.VM;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace Chat.UI.UserControls
+namespace Chat.UI.Views.Screens
 {
     /// <summary>
     /// Interaction logic for ChatWindow.xaml
@@ -36,8 +37,19 @@ namespace Chat.UI.UserControls
             _contact = contact;
             IsGame = isGame;
             
-            this.Title = $"{_mainVM.UserName} - Chat with {_contact}";
-            chatControl_cc.Content = new ChatScreen(_mainVM.UserName,contact);
+            if (IsGame)
+            {
+                this.Title = $"{_mainVM.UserName} - Game with {_contact}";
+                this.Width = 1000;
+                this.Height = 700;
+                BackgammonVM gameVM = new BackgammonVM(_mainVM.UserName, contact);
+                chatControl_cc.Content = new BackgammonScreen(gameVM);
+            }
+            else
+            {
+                this.Title = $"{_mainVM.UserName} - Chat with {_contact}";
+                chatControl_cc.Content = new ChatScreen(_mainVM.UserName, contact);
+            }
         }
         private void Window_Closed(object sender, EventArgs e)
         {
@@ -50,7 +62,7 @@ namespace Chat.UI.UserControls
         }
     }
 
-    public class ChatEventArgs: EventArgs
+    public class ChatEventArgs : EventArgs
     {
         public string contact { get; set; }
     }

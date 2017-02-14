@@ -21,6 +21,8 @@ namespace Chat.Logic
 
         public static event EventHandler GameRequestedEvent;
 
+        public static event EventHandler GameRespondEvent;
+
         #endregion Properties and Members
 
 
@@ -87,7 +89,7 @@ namespace Chat.Logic
 
         public void NewGameResponse(string contact, bool isAccepted)
         {
-            throw new NotImplementedException();
+            GameRespondEvent?.Invoke(null, new GameResponseEventArgs(contact, isAccepted));
         }
 
         #endregion Backgammon Implementation
@@ -121,6 +123,18 @@ namespace Chat.Logic
         {
             Messages = messages;
             Sender = sender;
+        }
+    }
+
+    public class GameResponseEventArgs : EventArgs
+    {
+        public string Contact { get; set; }
+        public bool IsAccepted { get; set; }
+
+        public GameResponseEventArgs(string contact, bool isAccepted)
+        {
+            Contact = contact;
+            IsAccepted = isAccepted;
         }
     }
 }

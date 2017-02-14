@@ -1,4 +1,5 @@
 ﻿using Chat.Logic;
+using Chat.UI.Views.Windows;
 using Chat.UI.VM;
 using Helpers;
 using System;
@@ -18,7 +19,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 
-namespace Chat.UI.UserControls
+namespace Chat.UI.Views.Screens
 {
     /// <summary>
     /// Interaction logic for WelcomeScreen.xaml

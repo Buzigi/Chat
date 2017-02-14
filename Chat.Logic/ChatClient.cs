@@ -215,12 +215,37 @@ namespace Chat.Logic
 
         #region IBackgammon Client Implementation
 
-        public static Guid? RequestGame(string userName, string contact)
+        public static void RequestGame(string userName, string contact)
         {
             try
             {
-                Guid? gameId = proxy.RequestNewGame(userName, contact);
-                Report.log(DeviceToReport.Client_Proxy, LogLevel.Information, $"New game opened {gameId}");
+                proxy.RequestNewGame(userName, contact);
+                Report.log(DeviceToReport.Client_Proxy, LogLevel.Information, $"New game opened with {contact}");
+            }
+            catch (Exception e)
+            {
+                Report.log(DeviceToReport.Client_Proxy, LogLevel.Exception, $"Game was not opened");
+                Report.log(DeviceToReport.Client_Proxy, LogLevel.Exception, e.Message);
+                throw e;
+            }
+        }
+
+        public async static Task<Guid?> RespondToGameRequest(string userName, string contact, bool isAccepted)
+        {
+            try
+            {
+                Guid? gameId = null;
+                await Task.Run(new Action(() => { gameId = proxy.AcceptGame(userName, contact, isAccepted);
+                
+                if (isAccepted)
+                {
+                    Report.log(DeviceToReport.Client_Proxy, LogLevel.Information, $"Game {gameId} was accepted");
+                }
+                else
+                {
+                    Report.log(DeviceToReport.Client_Proxy, LogLevel.Information, $"Game {gameId} was not accepted");
+                }
+                }));
                 return gameId;
             }
             catch (Exception e)

@@ -10,7 +10,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace Chat.UI.UserControls
+namespace Chat.UI.Views.Screens
 {
     public class MessageVisual : Decorator
     {

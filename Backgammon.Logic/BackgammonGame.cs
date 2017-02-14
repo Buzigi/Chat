@@ -1,17 +1,26 @@
 ﻿using Contracts;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Backgammon.Logic
 {
-    public class BackgammonGame
+    public class BackgammonGame: INotifyPropertyChanged
     {
         #region Properties and Private Fields
 
         private Game _game;
+
+        public Game Game { get
+            {
+                return _game;
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         #endregion Properties and Private Fields 
 
@@ -63,7 +72,7 @@ namespace Backgammon.Logic
             _game.Jail[1] = 0;
             _game.EndStack[0] = 0;
             _game.EndStack[1] = 0;
-
+            PropertyChanged?.Invoke(null, new PropertyChangedEventArgs("Game"));
         }
 
 

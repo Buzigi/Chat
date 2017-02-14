@@ -1,4 +1,4 @@
-﻿using Chat.UI.UserControls;
+﻿using Chat.UI.Views.Screens;
 using Chat.UI.VM;
 using Helpers;
 using System;
@@ -16,7 +16,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Chat.UI
+namespace Chat.UI.Views.Windows
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

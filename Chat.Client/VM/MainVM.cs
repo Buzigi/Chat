@@ -1,5 +1,5 @@
 ﻿using Chat.Logic;
-using Chat.UI.UserControls;
+using Chat.UI.Views.Screens;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

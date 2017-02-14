@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Chat.UI.UserControls
+namespace Chat.UI.Views.Screens
 {
     public enum ScreensEnum
     {

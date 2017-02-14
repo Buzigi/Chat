@@ -1,10 +1,10 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:Chat.UI"
-                    xmlns:controls="clr-namespace:Chat.UI.UserControls"
+                    xmlns:controls="clr-namespace:Chat.UI.Views.Screens"
                     xmlns:m="clr-namespace:Contracts;assembly=Chat.Contracts">
-    
-    <!--Waiting window Triggers-->
+
+    <!--#region Waiting window Triggers-->
     <Style x:Key="WaitStyle" TargetType="UserControl">
         <Style.Triggers>
             <DataTrigger Binding="{Binding IsWaiting}" Value="True">
@@ -18,17 +18,21 @@
         </Style.Triggers>
     </Style>
 
-    <!--Switching displayed screen-->
+    <!--#endregion Waiting window Triggers-->
+
+    <!--#region Switching displayed screen-->
     <DataTemplate x:Key="WelcomeControl">
         <controls:WelcomeScreen/>
     </DataTemplate>
-    
-    
+
+
     <DataTemplate x:Key="ContactControl">
         <controls:ContactScreen/>
     </DataTemplate>
-    
-    <!--Chat List View Style-->
+
+    <!--#endregion Switching displayed screen-->
+
+    <!--#region Chat List View Style-->
     <Style x:Key="MessageListBoxStyle" TargetType="ListBox">
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="BorderThickness" Value="3" />
@@ -66,5 +70,8 @@
         </controls:MessageVisual>
     </DataTemplate>
 
+    <!--#endregion Chat List View Style-->
+
+    
 
 </ResourceDictionary>

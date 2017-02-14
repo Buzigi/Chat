@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Chat.UI.UserControls
+namespace Chat.UI.Views.Screens
 {
     /// <summary>
     /// Interaction logic for WaitScreen.xaml

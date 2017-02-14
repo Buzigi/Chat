@@ -1,4 +1,5 @@
 ﻿using Chat.Logic;
+using Chat.UI.Views.Windows;
 using Chat.UI.VM;
 using Contracts;
 using Helpers;
@@ -17,7 +18,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Chat.UI.UserControls
+namespace Chat.UI.Views.Screens
 {
     /// <summary>
     /// Interaction logic for ContactScreen.xaml
@@ -29,7 +30,7 @@ namespace Chat.UI.UserControls
         MainVM _mainVM;
 
         //Holds all the open chat windows
-        Dictionary<string,ChatWindow> _openChatsList;
+        Dictionary<string, ChatWindow> _openChatsList;
 
         #endregion Members
 
@@ -55,6 +56,9 @@ namespace Chat.UI.UserControls
             //Game request recieved
             ChatResult.GameRequestedEvent += ChatResult_GameRequestedEvent;
 
+            //Game response recieved
+            ChatResult.GameRespondEvent += ChatResult_GameRespondEvent; ;
+
             //Play Backgammon menu item clicked
             MainWindow.PlayEvent += MenuItem_PlayEvent;
 
@@ -63,54 +67,13 @@ namespace Chat.UI.UserControls
         }
 
 
+
         #endregion C'tor
 
 
         #region Event Handling
 
-        //Contact logged in/out
-        private void ChatResult_contactChangeEvent(object sender, EventArgs e)
-        {
-            try
-            {
-                string contact = ((ContactChangeEventArgs)e).Contact;
-                bool isConnected = ((ContactChangeEventArgs)e).IsConnected;
-
-                if (isConnected)
-                {
-                    _mainVM.ConnectedContacts.Add(contact);
-                    _mainVM.DisconnectedContacts.Remove(contact);
-                }
-                else
-                {
-                    _mainVM.ConnectedContacts.Remove(contact);
-                    _mainVM.DisconnectedContacts.Add(contact);
-                    if (_openChatsList.ContainsKey(contact))
-                    {
-                        Dispatcher.BeginInvoke(new System.Action(() =>
-                        {
-                            _openChatsList[contact].CloseChat();
-                        }));
-                        MessageBox.Show($"User {contact} disconnected");
-
-
-                    }
-                }
-                Dispatcher.BeginInvoke(new System.Action(() =>
-                {
-                    online_lb.ItemsSource = _mainVM.ConnectedContacts;
-                    offline_lb.ItemsSource = _mainVM.DisconnectedContacts;
-                    online_lb.Items.Refresh();
-                    offline_lb.Items.Refresh();
-                }));
-                ReportError(LogLevel.Information, $"Contact {contact} disconnected from user {_mainVM.UserName}");
-            }
-            catch (Exception ex)
-            {
-                ReportError(LogLevel.Exception, ex.Message);
-            }
-
-        }
+        #region UI Commands Events
 
         //Load contact lists after user control loaded
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
@@ -165,12 +128,23 @@ namespace Chat.UI.UserControls
             string contact = (string)online_lb.SelectedItem;
             if (contact != null)
             {
-                RequestGame(contact);
-                //ActivateGame(contact);
+                //Chat or Game already open with contact
+                if (_openChatsList.ContainsKey(contact))
+                {
+                    //Chat open with contact
+                    if (!_openChatsList[contact].IsGame)
+                    {
+                        RequestGame(contact);
+                    }
+                }
+                else
+                {
+                    RequestGame(contact);
+                }
 
             }
         }
-        
+
         //Chat window was closed
         private void Chat_WindowClosedEvent(object sender, EventArgs e)
         {
@@ -178,12 +152,98 @@ namespace Chat.UI.UserControls
             _openChatsList.Remove(contact);
         }
 
+        //Play Backgammon menu item was clicked
+        private void MenuItem_PlayEvent(object sender, EventArgs e)
+        {
+            backgammon_b_Click(null, null);
+        }
+
+        #endregion UI Commands Events
+
+        #region Chat Result Events
+
+        //Contact logged in/out
+        private void ChatResult_contactChangeEvent(object sender, EventArgs e)
+        {
+            try
+            {
+                string contact = ((ContactChangeEventArgs)e).Contact;
+                bool isConnected = ((ContactChangeEventArgs)e).IsConnected;
+
+                if (isConnected)
+                {
+                    _mainVM.ConnectedContacts.Add(contact);
+                    _mainVM.DisconnectedContacts.Remove(contact);
+                }
+                else
+                {
+                    _mainVM.ConnectedContacts.Remove(contact);
+                    _mainVM.DisconnectedContacts.Add(contact);
+                    if (_openChatsList.ContainsKey(contact))
+                    {
+                        Dispatcher.BeginInvoke(new System.Action(() =>
+                        {
+                            _openChatsList[contact].CloseChat();
+                        }));
+                        MessageBox.Show($"User {contact} disconnected");
+
+
+                    }
+                }
+                Dispatcher.BeginInvoke(new System.Action(() =>
+                {
+                    online_lb.ItemsSource = _mainVM.ConnectedContacts;
+                    offline_lb.ItemsSource = _mainVM.DisconnectedContacts;
+                    online_lb.Items.Refresh();
+                    offline_lb.Items.Refresh();
+                }));
+                ReportError(LogLevel.Information, $"Contact {contact} disconnected from user {_mainVM.UserName}");
+            }
+            catch (Exception ex)
+            {
+                ReportError(LogLevel.Exception, ex.Message);
+            }
+
+        }
+
         //A game request from a contact was recieved
-        private void ChatResult_GameRequestedEvent(object sender, EventArgs e)
+        private async void ChatResult_GameRequestedEvent(object sender, EventArgs e)
         {
             string contact = ((ContactChangeEventArgs)e).Contact;
-            MessageBoxResult result = MessageBox.Show($"{contact} requested a game of backgammon. Do you agree?", 
+            MessageBoxResult result = MessageBox.Show($"{contact} requested a game of backgammon. Do you agree?",
                                                       $"Game Request from {contact}", MessageBoxButton.YesNo);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                await ChatClient.RespondToGameRequest(_mainVM.UserName, contact, true);
+                Dispatcher.BeginInvoke(new System.Action(() =>
+                {
+                    ActivateGame(contact);
+                }));
+
+            }
+            else
+            {
+                await ChatClient.RespondToGameRequest(_mainVM.UserName, contact, false);
+            }
+        }
+
+        private void ChatResult_GameRespondEvent(object sender, EventArgs e)
+        {
+            bool isAccepted = ((GameResponseEventArgs)e).IsAccepted;
+            string contact = ((GameResponseEventArgs)e).Contact;
+            if (isAccepted)
+            {
+                Dispatcher.BeginInvoke(new System.Action(() =>
+                {
+                    ActivateGame(contact);
+                }));
+
+            }
+            else
+            {
+                MessageBox.Show($"{contact} declined the game request");
+            }
         }
 
         //List of all the messages between user and contact was recieved
@@ -199,11 +259,9 @@ namespace Chat.UI.UserControls
             }
 
         }
-        
-        private void MenuItem_PlayEvent(object sender, EventArgs e)
-        {
-            backgammon_b_Click(null, null);
-        }
+
+        #endregion Chat Result Events
+
 
         #endregion Event Handling
 
@@ -229,13 +287,18 @@ namespace Chat.UI.UserControls
         {
             Report.log(DeviceToReport.Client_ContactWindow, level, message);
         }
-        
+
         private void ActivateChat(string contact)
         {
             //Chat window with contact is not open
             if (!_openChatsList.ContainsKey(contact))
             {
-                OpenChatWindow(contact, false);
+                Dispatcher.BeginInvoke(new System.Action(() =>
+                {
+                    OpenChatWindow(contact, false);
+
+                }));
+
             }
             //Chat (or game) window already open
             else
@@ -249,14 +312,13 @@ namespace Chat.UI.UserControls
             ChatClient.RequestGame(_mainVM.UserName, contact);
         }
 
-        private void ActivateGame(string contact)
+        private void ActivateGame(string contact, Guid? session = null)
         {
             ChatWindow window;
             //Chat or game window with contact is not open
             if (!_openChatsList.ContainsKey(contact))
             {
                 OpenChatWindow(contact, true);
-                //game.WindowClosedEvent += Chat_WindowClosedEvent;
             }
             //Chat or game already open
             else
@@ -274,13 +336,13 @@ namespace Chat.UI.UserControls
                 {
                     _openChatsList[contact].Activate();
                 }
-                
+
             }
         }
 
         private void OpenChatWindow(string contact, bool isGame)
         {
-            ChatWindow chat = new ChatWindow(contact);
+            ChatWindow chat = new ChatWindow(contact, isGame);
             chat.IsGame = isGame;
             _openChatsList.Add(contact, chat);
             chat.Show();
