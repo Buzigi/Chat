@@ -21,15 +21,25 @@ namespace Chat.UI.Views.Screens
     /// </summary>
     public partial class BackgammonScreen : UserControl
     {
-        BackgammonVM _vm;
+        public BackgammonVM VM { get; set; }
+         
+
+        StackPanel[] _stacks;
 
         public BackgammonScreen(BackgammonVM vm)
         {
             InitializeComponent();
-            _vm = vm;
-            this.DataContext = _vm;
-            chat_cc.Content = new ChatScreen(_vm.PlayerA, _vm.PlayerB);
+            VM = vm;
+            this.DataContext = VM;
+            chat_cc.Content = new ChatScreen(VM.PlayerA, VM.PlayerB);
+            VM.AddColor("White",23);
+            VM.AddColor("Black", 23);
+
         }
 
+        #region Private UI Methods
+
+
+        #endregion Private UI Methods
     }
 }

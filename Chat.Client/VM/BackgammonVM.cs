@@ -1,4 +1,5 @@
 ﻿using Backgammon.Logic;
+using Chat.Logic;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -12,9 +13,11 @@ namespace Chat.Client.VM
     {
         #region Properties and Fields
 
-        BackgammonGame game;
+        const int NUM_OF_STACKS = 24;
 
-        public List<string> Color { get; set; }
+        private BackgammonGame _game;
+
+        public List<string>[] Stacks { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -22,9 +25,11 @@ namespace Chat.Client.VM
 
         public string PlayerB { get; set; }
 
+        public Guid? Session { get; set; }
+
 
         #endregion Properties and Fields
-
+        
 
         #region C'tor
 
@@ -34,19 +39,36 @@ namespace Chat.Client.VM
             PlayerB = playerB;
             PropertyChanged?.Invoke(null, new PropertyChangedEventArgs("PlayerA"));
             PropertyChanged?.Invoke(null, new PropertyChangedEventArgs("PlayerB"));
-
-            game = new BackgammonGame();
-            //UpdateBoard();
+            Stacks = new List<string>[NUM_OF_STACKS];
+            for (int i = 0; i < NUM_OF_STACKS; i++)
+            {
+                Stacks[i] = new List<string>();
+            }
+            _game = new BackgammonGame();
         }
 
 
         #endregion C'tor
 
-        #region Private Methods
-        private void UpdateBoard()
+        #region Public Methods
+
+        public void StartChat()
         {
-            throw new NotImplementedException();
+            Session = ChatClient.AddSession(PlayerA, PlayerB);
         }
+
+        public void AddColor(string col, int index)
+        {
+            Stacks[index].Add(col);
+
+            PropertyChanged?.Invoke(null, new PropertyChangedEventArgs("Colors"));
+        }
+
+        #endregion Public Methods
+
+
+        #region Private Methods
+
 
         #endregion Private Methods
     }

@@ -248,8 +248,19 @@ namespace Service
         }
 
         public void EndGame(Guid session)
+        //Ends a game session with userName
         {
-            throw new NotImplementedException();
+            try
+            {
+                _sessions.Remove(session);
+                _sessionDetails.Remove(session);
+                Report($"Game {session} ended", LogLevel.Information);
+            }
+            catch (Exception e)
+            {
+                Report($"Game {session} was not ended", LogLevel.Exception);
+                Report(e.Message, LogLevel.Exception);
+            }
         }
 
         public bool RestartGame(Guid session)

@@ -23,6 +23,9 @@ namespace Chat.UI.Views.Screens
     {
         MainVM _mainVM;
 
+
+        BackgammonVM gameVM;
+
         string _contact;
 
         public bool IsGame { get; set; }
@@ -36,13 +39,13 @@ namespace Chat.UI.Views.Screens
             _mainVM = MainVM.Instance;
             _contact = contact;
             IsGame = isGame;
-            
+
             if (IsGame)
             {
                 this.Title = $"{_mainVM.UserName} - Game with {_contact}";
-                this.Width = 1000;
+                this.Width = 1200;
                 this.Height = 700;
-                BackgammonVM gameVM = new BackgammonVM(_mainVM.UserName, contact);
+                gameVM = new BackgammonVM(_mainVM.UserName, contact);
                 chatControl_cc.Content = new BackgammonScreen(gameVM);
             }
             else
@@ -53,7 +56,11 @@ namespace Chat.UI.Views.Screens
         }
         private void Window_Closed(object sender, EventArgs e)
         {
-            WindowClosedEvent?.Invoke(this, new ChatEventArgs() { contact = _contact });
+            WindowClosedEvent?.Invoke(this, new ChatEventArgs()
+            {
+                contact = _contact,
+                Session = (Guid)gameVM.Session
+            });
         }
 
         internal void CloseChat()
@@ -65,5 +72,8 @@ namespace Chat.UI.Views.Screens
     public class ChatEventArgs : EventArgs
     {
         public string contact { get; set; }
+
+        public Guid Session { get; set; }
+
     }
 }

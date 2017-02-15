@@ -149,6 +149,11 @@ namespace Chat.UI.Views.Screens
         private void Chat_WindowClosedEvent(object sender, EventArgs e)
         {
             string contact = ((ChatEventArgs)e).contact;
+            Guid session= ((ChatEventArgs)e).Session;
+            if (session!=null)
+            {
+                ChatClient.EndGame(session);
+            }
             _openChatsList.Remove(contact);
         }
 
@@ -327,7 +332,8 @@ namespace Chat.UI.Views.Screens
                 //Chat window open
                 if (!window.IsGame)
                 {
-                    Chat_WindowClosedEvent(null, new ChatEventArgs() { contact = contact });
+                    window.Close();
+                    _openChatsList.Remove(contact);
                     OpenChatWindow(contact, true);
                 }
 

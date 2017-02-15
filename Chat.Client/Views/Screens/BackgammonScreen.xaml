@@ -15,8 +15,8 @@
             <RowDefinition Height="81*"/>
             <RowDefinition Height="40*"/>
             <RowDefinition Height="50*"/>
-            <RowDefinition Height="22*"/>
-            <RowDefinition Height="44*"/>
+            <RowDefinition Height="12*"/>
+            <RowDefinition Height="54*"/>
             <RowDefinition Height="79*"/>
             <RowDefinition Height="50*"/>
             <RowDefinition Height="117*"/>
@@ -24,37 +24,35 @@
             <RowDefinition Height="6*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="65*"/>
-            <ColumnDefinition Width="61*"/>
-            <ColumnDefinition Width="60*"/>
-            <ColumnDefinition Width="61*"/>
-            <ColumnDefinition Width="61*"/>
-            <ColumnDefinition Width="60*"/>
-            <ColumnDefinition Width="20*"/>
-            <ColumnDefinition Width="60*"/>
-            <ColumnDefinition Width="61*"/>
-            <ColumnDefinition Width="61*"/>
-            <ColumnDefinition Width="61*"/>
-            <ColumnDefinition Width="60*"/>
-            <ColumnDefinition Width="61*"/>
-            <ColumnDefinition Width="5*"/>
-            <ColumnDefinition Width="8*"/>
-            <ColumnDefinition Width="300*"/>
+            <ColumnDefinition Width="52*"/>
+            <ColumnDefinition Width="53*"/>
+            <ColumnDefinition Width="52*"/>
+            <ColumnDefinition Width="52*"/>
+            <ColumnDefinition Width="52*"/>
+            <ColumnDefinition Width="52*"/>
+            <ColumnDefinition Width="52*"/>
+            <ColumnDefinition Width="52*"/>
+            <ColumnDefinition Width="51*"/>
+            <ColumnDefinition Width="52*"/>
+            <ColumnDefinition Width="52*"/>
+            <ColumnDefinition Width="52*"/>
+            <ColumnDefinition Width="54*"/>
+            <ColumnDefinition Width="54*"/>
+            <ColumnDefinition Width="320*"/>
         </Grid.ColumnDefinitions>
-        <Image Source="/Images/Backgammon_board.jpg" Grid.Column="0" Stretch="Fill" Grid.ColumnSpan="14" Grid.RowSpan="14"/>
-        <Separator Grid.Column="14" Grid.Row="0" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Grid.RowSpan="14"/>
-        <TextBlock Text="{Binding PlayerA}" Grid.Column="15" Grid.Row="1" FontFamily="Buxton Sketch" HorizontalAlignment="Center" FontSize="30"/>
-        <TextBlock Text="Vs." Grid.Column="15" Grid.Row="2" FontFamily="Buxton Sketch" HorizontalAlignment="Center" FontSize="30" Margin="123,0"/>
-        <TextBlock Text="{Binding PlayerB}" Grid.Column="15" Grid.Row="3" FontFamily="Buxton Sketch" HorizontalAlignment="Center" FontSize="30"/>
-        <Button Content="Roll the dice" Grid.Column="15" Grid.Row="6" FontFamily="Buxton Sketch" HorizontalAlignment="Center" FontSize="30" Width="262" Margin="10,0.231,10,21.707" Grid.RowSpan="2" />
-        <TextBlock Text="Chat:" Grid.Column="15" Grid.Row="8" FontFamily="Buxton Sketch" HorizontalAlignment="Center" FontSize="30"/>
-        <ContentControl Name="chat_cc" Grid.Column="15" Grid.Row="9" Grid.RowSpan="7"/>
-        
-        <!--#region culomns-->
+        <Image Source="/Images/Backgammon_board.jpg" Grid.Column="0" Stretch="Fill" Grid.ColumnSpan="13" Grid.RowSpan="14" Margin="0,0,0,0.16"/>
+        <Separator Grid.Column="13" Grid.Row="0" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Grid.RowSpan="14" Margin="2,2,2,2.16"/>
+        <TextBlock Text="{Binding PlayerA}" Grid.Column="14" Grid.Row="1" FontFamily="Buxton Sketch" HorizontalAlignment="Center" FontSize="30" Margin="134,0" Width="34"/>
+        <TextBlock Text="Vs." Grid.Column="14" Grid.Row="2" FontFamily="Buxton Sketch" HorizontalAlignment="Center" FontSize="30" Margin="118,0,116,0" Width="34"/>
+        <TextBlock Text="{Binding PlayerB}" Grid.Column="14" Grid.Row="3" FontFamily="Buxton Sketch" HorizontalAlignment="Center" FontSize="30" Margin="134,0" Width="34"/>
+        <Button Content="Roll the dice" Grid.Column="14" Grid.Row="6" FontFamily="Buxton Sketch" HorizontalAlignment="Center" FontSize="30" Width="200" Margin="34,0.231,34,11.735" Grid.RowSpan="2" />
+        <TextBlock Text="Chat:" Grid.Column="14" Grid.Row="8" FontFamily="Buxton Sketch" HorizontalAlignment="Center" FontSize="30" Margin="106,0.265,106,78.51" Grid.RowSpan="2" Width="56" />
+        <ContentControl Name="chat_cc" Grid.Column="14" Grid.Row="9" Grid.RowSpan="5" Margin="0,0.265,0,0.16"/>
 
-        
-        
+        <!--#region Columns-->
 
-        <!--#endregion culomns-->
+        <ListView Grid.Column="12" Grid.Row="0" Grid.RowSpan="13" VerticalAlignment="Top" ItemsSource="{Binding Colors[23]}" ItemTemplate="{StaticResource PiecesTemplate}" Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Center"/>
+
+        <!--#endregion Columns-->
     </Grid>
 </UserControl>

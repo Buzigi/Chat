@@ -72,6 +72,12 @@
 
     <!--#endregion Chat List View Style-->
 
-    
+    <!--#region Pieces Template-->
+
+    <DataTemplate x:Key="PiecesTemplate" DataType="{x:Type ListViewItem}">
+        <Ellipse Fill="{Binding}"  Height="40" Width="40" Stroke="Black" IsEnabled="False"/>
+    </DataTemplate>
+
+    <!--#endregion Pieces Template-->
 
 </ResourceDictionary>

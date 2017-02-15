@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:Chat.UI.Views.Screens"
         xmlns:controls="clr-namespace:Chat.UI.Views.Screens"
         mc:Ignorable="d" Height="500" Width="500"
-        Closed="Window_Closed">
+        Closed="Window_Closed"
+        ResizeMode="NoResize">
     <Grid>
         <ContentControl Name="chatControl_cc" Grid.Column="0" Grid.Row="0"/>
     </Grid>

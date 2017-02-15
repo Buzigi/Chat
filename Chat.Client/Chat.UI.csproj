@@ -200,6 +200,8 @@
     <Resource Include="Images\4.PNG" />
     <Resource Include="Images\5.PNG" />
     <Resource Include="Images\6.png" />
+  </ItemGroup>
+  <ItemGroup>
     <Resource Include="Images\Backgammon_board.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

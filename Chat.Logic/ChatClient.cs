@@ -256,6 +256,11 @@ namespace Chat.Logic
             }
         }
 
+        public static void EndGame(Guid session)
+        {
+            proxy.EndGame(session);
+        }
+
         #endregion IBackgammon Client Implementation
 
         #region Private Methods
