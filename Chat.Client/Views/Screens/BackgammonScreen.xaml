@@ -4,9 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Chat.UI.Views.Screens"
+             xmlns:shapes="clr-namespace:WpfShapes;assembly=WpfShapes"
              mc:Ignorable="d" 
              d:DesignHeight="700" d:DesignWidth="1000">
-    <Grid>
+    <Grid Name="mainGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="29*"/>
             <RowDefinition Height="40*"/>
@@ -45,14 +46,47 @@
         <TextBlock Text="{Binding PlayerA}" Grid.Column="14" Grid.Row="1" FontFamily="Buxton Sketch" HorizontalAlignment="Center" FontSize="30" Margin="134,0" Width="34"/>
         <TextBlock Text="Vs." Grid.Column="14" Grid.Row="2" FontFamily="Buxton Sketch" HorizontalAlignment="Center" FontSize="30" Margin="118,0,116,0" Width="34"/>
         <TextBlock Text="{Binding PlayerB}" Grid.Column="14" Grid.Row="3" FontFamily="Buxton Sketch" HorizontalAlignment="Center" FontSize="30" Margin="134,0" Width="34"/>
-        <Button Content="Roll the dice" Grid.Column="14" Grid.Row="6" FontFamily="Buxton Sketch" HorizontalAlignment="Center" FontSize="30" Width="200" Margin="34,0.231,34,11.735" Grid.RowSpan="2" />
+        <Button Name="rollDice_b" Content="Roll the dice" Grid.Column="14" Grid.Row="6" FontFamily="Buxton Sketch" HorizontalAlignment="Center" FontSize="30" Width="200" Margin="34,0.231,34,11.735" Grid.RowSpan="2" Click="rollDice_b_Click"/>
         <TextBlock Text="Chat:" Grid.Column="14" Grid.Row="8" FontFamily="Buxton Sketch" HorizontalAlignment="Center" FontSize="30" Margin="106,0.265,106,78.51" Grid.RowSpan="2" Width="56" />
         <ContentControl Name="chat_cc" Grid.Column="14" Grid.Row="9" Grid.RowSpan="5" Margin="0,0.265,0,0.16"/>
+        <StackPanel Orientation="Horizontal" Grid.Column="14" Grid.Row="4" Width="150">
+            <Border BorderThickness="2" BorderBrush="Black" Margin="10">
+                <Image Name="diceA_im" Source="{Binding DiceImage[0]}" Width="50" Height="50"/>
+            </Border>
+            <Border BorderThickness="2" BorderBrush="Black"  Margin="10">
+                <Image Name="diceB_im" Source="{Binding DiceImage[1]}" Width="50" Height="50"/>
+            </Border>
+        </StackPanel>
 
         <!--#region Columns-->
 
-        <ListView Grid.Column="12" Grid.Row="0" Grid.RowSpan="13" VerticalAlignment="Top" ItemsSource="{Binding Colors[23]}" ItemTemplate="{StaticResource PiecesTemplate}" Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Center"/>
+        <ItemsControl Name="s23" Grid.Column="12" Grid.Row="0" Grid.RowSpan="13" Panel.ZIndex="1" VerticalAlignment="Top" ItemsSource="{Binding Game.Board[23]}" ItemTemplate="{StaticResource PiecesTemplate}" Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Center" MouseEnter="ItemsControl_MouseEnter" MouseLeave="ItemsControl_MouseLeaves"/>
+        <ItemsControl Name="s22" Grid.Column="11" Grid.Row="0" Grid.RowSpan="13" Panel.ZIndex="1" VerticalAlignment="Top" ItemsSource="{Binding Game.Board[22]}" ItemTemplate="{StaticResource PiecesTemplate}" Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Center" MouseEnter="ItemsControl_MouseEnter" MouseLeave="ItemsControl_MouseLeaves"/>
+        <ItemsControl Name="s21" Grid.Column="10" Grid.Row="0" Grid.RowSpan="13" Panel.ZIndex="1" VerticalAlignment="Top" ItemsSource="{Binding Game.Board[21]}" ItemTemplate="{StaticResource PiecesTemplate}" Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Center" MouseEnter="ItemsControl_MouseEnter" MouseLeave="ItemsControl_MouseLeaves"/>
+        <ItemsControl Name="s20" Grid.Column="09" Grid.Row="0" Grid.RowSpan="13" Panel.ZIndex="1" VerticalAlignment="Top" ItemsSource="{Binding Game.Board[20]}" ItemTemplate="{StaticResource PiecesTemplate}" Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Center" MouseEnter="ItemsControl_MouseEnter" MouseLeave="ItemsControl_MouseLeaves"/>
+        <ItemsControl Name="s19" Grid.Column="08" Grid.Row="0" Grid.RowSpan="13" Panel.ZIndex="1" VerticalAlignment="Top" ItemsSource="{Binding Game.Board[19]}" ItemTemplate="{StaticResource PiecesTemplate}" Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Center" MouseEnter="ItemsControl_MouseEnter" MouseLeave="ItemsControl_MouseLeaves"/>
+        <ItemsControl Name="s18" Grid.Column="07" Grid.Row="0" Grid.RowSpan="13" Panel.ZIndex="1" VerticalAlignment="Top" ItemsSource="{Binding Game.Board[18]}" ItemTemplate="{StaticResource PiecesTemplate}" Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Center" MouseEnter="ItemsControl_MouseEnter" MouseLeave="ItemsControl_MouseLeaves"/>
+        <ItemsControl Name="s17" Grid.Column="05" Grid.Row="0" Grid.RowSpan="13" Panel.ZIndex="1" VerticalAlignment="Top" ItemsSource="{Binding Game.Board[17]}" ItemTemplate="{StaticResource PiecesTemplate}" Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Center" MouseEnter="ItemsControl_MouseEnter" MouseLeave="ItemsControl_MouseLeaves"/>
+        <ItemsControl Name="s16" Grid.Column="04" Grid.Row="0" Grid.RowSpan="13" Panel.ZIndex="1" VerticalAlignment="Top" ItemsSource="{Binding Game.Board[16]}" ItemTemplate="{StaticResource PiecesTemplate}" Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Center" MouseEnter="ItemsControl_MouseEnter" MouseLeave="ItemsControl_MouseLeaves"/>
+        <ItemsControl Name="s15" Grid.Column="03" Grid.Row="0" Grid.RowSpan="13" Panel.ZIndex="1" VerticalAlignment="Top" ItemsSource="{Binding Game.Board[15]}" ItemTemplate="{StaticResource PiecesTemplate}" Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Center" MouseEnter="ItemsControl_MouseEnter" MouseLeave="ItemsControl_MouseLeaves"/>
+        <ItemsControl Name="s14" Grid.Column="02" Grid.Row="0" Grid.RowSpan="13" Panel.ZIndex="1" VerticalAlignment="Top" ItemsSource="{Binding Game.Board[14]}" ItemTemplate="{StaticResource PiecesTemplate}" Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Center" MouseEnter="ItemsControl_MouseEnter" MouseLeave="ItemsControl_MouseLeaves"/>
+        <ItemsControl Name="s13" Grid.Column="01" Grid.Row="0" Grid.RowSpan="13" Panel.ZIndex="1" VerticalAlignment="Top" ItemsSource="{Binding Game.Board[13]}" ItemTemplate="{StaticResource PiecesTemplate}" Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Center" MouseEnter="ItemsControl_MouseEnter" MouseLeave="ItemsControl_MouseLeaves"/>
+        <ItemsControl Name="s12" Grid.Column="00" Grid.Row="0" Grid.RowSpan="13" Panel.ZIndex="1" VerticalAlignment="Top" ItemsSource="{Binding Game.Board[12]}" ItemTemplate="{StaticResource PiecesTemplate}" Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Center" MouseEnter="ItemsControl_MouseEnter" MouseLeave="ItemsControl_MouseLeaves"/>
+        <ItemsControl Name="s11" Grid.Column="00" Grid.Row="0" Grid.RowSpan="13" Panel.ZIndex="1" VerticalAlignment="Bottom" ItemsSource="{Binding Game.Board[11]}" ItemTemplate="{StaticResource PiecesTemplate}" Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Center" MouseEnter="ItemsControl_MouseEnter" MouseLeave="ItemsControl_MouseLeaves"/>
+        <ItemsControl Name="s10" Grid.Column="01" Grid.Row="0" Grid.RowSpan="13" Panel.ZIndex="1" VerticalAlignment="Bottom" ItemsSource="{Binding Game.Board[10]}" ItemTemplate="{StaticResource PiecesTemplate}" Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Center" MouseEnter="ItemsControl_MouseEnter" MouseLeave="ItemsControl_MouseLeaves"/>
+        <ItemsControl Name="s09" Grid.Column="02" Grid.Row="0" Grid.RowSpan="13" Panel.ZIndex="1" VerticalAlignment="Bottom" ItemsSource="{Binding Game.Board[09]}" ItemTemplate="{StaticResource PiecesTemplate}" Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Center" MouseEnter="ItemsControl_MouseEnter" MouseLeave="ItemsControl_MouseLeaves"/>
+        <ItemsControl Name="s08" Grid.Column="03" Grid.Row="0" Grid.RowSpan="13" Panel.ZIndex="1" VerticalAlignment="Bottom" ItemsSource="{Binding Game.Board[08]}" ItemTemplate="{StaticResource PiecesTemplate}" Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Center" MouseEnter="ItemsControl_MouseEnter" MouseLeave="ItemsControl_MouseLeaves"/>
+        <ItemsControl Name="s07" Grid.Column="04" Grid.Row="0" Grid.RowSpan="13" Panel.ZIndex="1" VerticalAlignment="Bottom" ItemsSource="{Binding Game.Board[07]}" ItemTemplate="{StaticResource PiecesTemplate}" Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Center" MouseEnter="ItemsControl_MouseEnter" MouseLeave="ItemsControl_MouseLeaves"/>
+        <ItemsControl Name="s06" Grid.Column="05" Grid.Row="0" Grid.RowSpan="13" Panel.ZIndex="1" VerticalAlignment="Bottom" ItemsSource="{Binding Game.Board[06]}" ItemTemplate="{StaticResource PiecesTemplate}" Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Center" MouseEnter="ItemsControl_MouseEnter" MouseLeave="ItemsControl_MouseLeaves"/>
+        <ItemsControl Name="s05" Grid.Column="07" Grid.Row="0" Grid.RowSpan="13" Panel.ZIndex="1" VerticalAlignment="Bottom" ItemsSource="{Binding Game.Board[05]}" ItemTemplate="{StaticResource PiecesTemplate}" Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Center" MouseEnter="ItemsControl_MouseEnter" MouseLeave="ItemsControl_MouseLeaves"/>
+        <ItemsControl Name="s04" Grid.Column="08" Grid.Row="0" Grid.RowSpan="13" Panel.ZIndex="1" VerticalAlignment="Bottom" ItemsSource="{Binding Game.Board[04]}" ItemTemplate="{StaticResource PiecesTemplate}" Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Center" MouseEnter="ItemsControl_MouseEnter" MouseLeave="ItemsControl_MouseLeaves"/>
+        <ItemsControl Name="s03" Grid.Column="09" Grid.Row="0" Grid.RowSpan="13" Panel.ZIndex="1" VerticalAlignment="Bottom" ItemsSource="{Binding Game.Board[03]}" ItemTemplate="{StaticResource PiecesTemplate}" Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Center" MouseEnter="ItemsControl_MouseEnter" MouseLeave="ItemsControl_MouseLeaves"/>
+        <ItemsControl Name="s02" Grid.Column="10" Grid.Row="0" Grid.RowSpan="13" Panel.ZIndex="1" VerticalAlignment="Bottom" ItemsSource="{Binding Game.Board[02]}" ItemTemplate="{StaticResource PiecesTemplate}" Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Center" MouseEnter="ItemsControl_MouseEnter" MouseLeave="ItemsControl_MouseLeaves"/>
+        <ItemsControl Name="s01" Grid.Column="11" Grid.Row="0" Grid.RowSpan="13" Panel.ZIndex="1" VerticalAlignment="Bottom" ItemsSource="{Binding Game.Board[01]}" ItemTemplate="{StaticResource PiecesTemplate}" Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Center" MouseEnter="ItemsControl_MouseEnter" MouseLeave="ItemsControl_MouseLeaves"/>
+        <ItemsControl Name="s00" Grid.Column="12" Grid.Row="0" Grid.RowSpan="13" Panel.ZIndex="1" VerticalAlignment="Bottom" ItemsSource="{Binding Game.Board[00]}" ItemTemplate="{StaticResource PiecesTemplate}" Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Center" MouseEnter="ItemsControl_MouseEnter" MouseLeave="ItemsControl_MouseLeaves"/>
+
 
         <!--#endregion Columns-->
+
     </Grid>
 </UserControl>

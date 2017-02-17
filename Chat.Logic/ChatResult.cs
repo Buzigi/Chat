@@ -23,6 +23,8 @@ namespace Chat.Logic
 
         public static event EventHandler GameRespondEvent;
 
+        public static event EventHandler GameEndedEvent;
+
         #endregion Properties and Members
 
 
@@ -67,13 +69,13 @@ namespace Chat.Logic
 
         public void GameEnded(string contact)
         {
-            throw new NotImplementedException();
+            GameEndedEvent?.Invoke(null, new ContactChangeEventArgs() { Contact = contact });
         }
 
         //Recieved a new game request
-        public void GameRequested(string contact)
+        public void GameRequested(string contact, Guid? session)
         {
-            GameRequestedEvent?.Invoke(null, new ContactChangeEventArgs() { Contact = contact });
+            GameRequestedEvent?.Invoke(null, new ContactChangeEventArgs() { Contact = contact, Session = session });
         }
 
         //Recieves a list of messages between this user and a contact
@@ -99,6 +101,8 @@ namespace Chat.Logic
     {
         public string Contact { get; set; }
         public bool IsConnected { get; set; }
+
+        public Guid? Session { get; set; }
     }
 
     public class ContactListsEventArgs : EventArgs

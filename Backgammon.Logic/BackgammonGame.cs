@@ -8,17 +8,21 @@ using System.Threading.Tasks;
 
 namespace Backgammon.Logic
 {
-    public class BackgammonGame: INotifyPropertyChanged
+    public class BackgammonGame : INotifyPropertyChanged
     {
         #region Properties and Private Fields
 
-        private Game _game;
+        Random rand;
 
-        public Game Game { get
-            {
-                return _game;
-            }
-        }
+        public List<string>[] Board { get; set; }
+
+        public List<string> EndStack { get; set; }
+
+        public List<string> Jail { get; set; }
+
+        public int[] Dice { get; set; }
+
+        public int[] Score { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -28,13 +32,12 @@ namespace Backgammon.Logic
 
         public BackgammonGame()
         {
-            _game = new Game()
-            {
-                Board = new int[2,24],
-                EndStack = new int[2],
-                Jail = new int[2],
-                Score = new int[]{ 0, 0 }
-            };
+            Board = new List<string>[24];
+            EndStack = new List<string>();
+            Jail = new List<string>();
+            Score = new int[] { 0, 0 };
+            Dice = new int[] { 0, 0 };
+            rand = new Random();
             SetNewGameBoard();
         }
 
@@ -44,15 +47,13 @@ namespace Backgammon.Logic
 
         #region Public Methods
 
-        public Game UpdateGameStatus()
+        public void RollDice()
         {
-            return _game;
+            Dice[0] = rand.Next(0, 6);
+            Dice[1] = rand.Next(0, 6);
+            PropertyChanged(null, new PropertyChangedEventArgs("Dice"));
         }
 
-        public void SetGameStatus(Game game)
-        {
-            _game = game;
-        }
 
         #endregion Public Methods
 
@@ -61,21 +62,35 @@ namespace Backgammon.Logic
 
         private void SetNewGameBoard()
         {
-            for (int i = 0; i < 2; i++)
+            for (int i = 0; i < 24 ; i++)
             {
-                _game.Board[i, 23] = 2;
-                _game.Board[i, 12] = 5;
-                _game.Board[i, 7] = 3;
-                _game.Board[i, 5] = 5;
+                Board[i] = new List<string>();
             }
-            _game.Jail[0] = 0;
-            _game.Jail[1] = 0;
-            _game.EndStack[0] = 0;
-            _game.EndStack[1] = 0;
-            PropertyChanged?.Invoke(null, new PropertyChangedEventArgs("Game"));
+            string color = "White";
+
+            AddToBoard(23, color, 2);
+            AddToBoard(12, color, 5);
+            AddToBoard(7, color, 3);
+            AddToBoard(5, color, 5);
+
+            color = "Black";
+
+            AddToBoard(0, color, 2);
+            AddToBoard(11, color, 5);
+            AddToBoard(16, color, 3);
+            AddToBoard(18, color, 5);
+            PropertyChanged?.Invoke(null, new PropertyChangedEventArgs("Board"));
         }
 
-
-        #endregion Private Methods
+    private void AddToBoard(int index, string color, int numOfPieces)
+    {
+        for (int i = 0; i < numOfPieces; i++)
+        {
+            Board[index].Add(color);
+        }
     }
+
+
+    #endregion Private Methods
+}
 }

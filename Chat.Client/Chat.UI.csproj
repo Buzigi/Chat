@@ -58,12 +58,17 @@
       <HintPath>..\packages\WpfAnimatedGif.1.4.14\lib\net\WpfAnimatedGif.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="WpfShapes, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\WpfShapes.0.1\lib\net40\WpfShapes.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Views\Animations.cs" />
     <Compile Include="Views\Screens\BackgammonScreen.xaml.cs">
       <DependentUpon>BackgammonScreen.xaml</DependentUpon>
     </Compile>

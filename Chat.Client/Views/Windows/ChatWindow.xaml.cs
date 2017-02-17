@@ -33,7 +33,7 @@ namespace Chat.UI.Views.Screens
 
         public event EventHandler WindowClosedEvent;
 
-        public ChatWindow(string contact, bool isGame = false)
+        public ChatWindow(string contact, bool isGame = false,Guid? session = null)
         {
             InitializeComponent();
             _mainVM = MainVM.Instance;
@@ -46,6 +46,7 @@ namespace Chat.UI.Views.Screens
                 this.Width = 1200;
                 this.Height = 700;
                 gameVM = new BackgammonVM(_mainVM.UserName, contact);
+                gameVM.Session = session;
                 chatControl_cc.Content = new BackgammonScreen(gameVM);
             }
             else
@@ -56,10 +57,19 @@ namespace Chat.UI.Views.Screens
         }
         private void Window_Closed(object sender, EventArgs e)
         {
+            Guid? session;
+            if (gameVM!=null)
+            {
+                session = (Guid)gameVM.Session;
+            }
+            else
+            {
+                session = null;
+            }
             WindowClosedEvent?.Invoke(this, new ChatEventArgs()
             {
                 contact = _contact,
-                Session = (Guid)gameVM.Session
+                Session = session
             });
         }
 
@@ -73,7 +83,7 @@ namespace Chat.UI.Views.Screens
     {
         public string contact { get; set; }
 
-        public Guid Session { get; set; }
+        public Guid? Session { get; set; }
 
     }
 }

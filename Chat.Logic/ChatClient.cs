@@ -215,12 +215,13 @@ namespace Chat.Logic
 
         #region IBackgammon Client Implementation
 
-        public static void RequestGame(string userName, string contact)
+        public static Guid? RequestGame(string userName, string contact)
         {
             try
             {
-                proxy.RequestNewGame(userName, contact);
+                Guid? session = proxy.RequestNewGame(userName, contact);
                 Report.log(DeviceToReport.Client_Proxy, LogLevel.Information, $"New game opened with {contact}");
+                return session;
             }
             catch (Exception e)
             {

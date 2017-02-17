@@ -252,6 +252,7 @@ namespace Service
         {
             try
             {
+                _sessions[session].GameEnded(_sessionDetails[session][0]);
                 _sessions.Remove(session);
                 _sessionDetails.Remove(session);
                 Report($"Game {session} ended", LogLevel.Information);
@@ -348,7 +349,10 @@ namespace Service
 
         private void SendGameToClient(string sender, string reciever)
         {
-            _clients[reciever].GameRequested(sender);
+            Guid session = Guid.NewGuid();
+            _sessions.Add(session, _clients[sender]);
+            _sessionDetails.Add(session, new string[] { reciever, sender });
+            _clients[reciever].GameRequested(sender, session);
         }
 
         private void SendGameResponseToClient(string sender, string reciever)

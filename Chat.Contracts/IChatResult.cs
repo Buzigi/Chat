@@ -29,7 +29,7 @@ namespace Contracts
         void NewGameResponse(string contact, bool isAccepted);
 
         [OperationContract(IsOneWay = true)]
-        void GameRequested(string contact);
+        void GameRequested(string contact, Guid? session);
 
         [OperationContract(IsOneWay = true)]
         void GetMove(string contact, int piece, int moves);

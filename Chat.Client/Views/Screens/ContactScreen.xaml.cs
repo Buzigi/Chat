@@ -32,6 +32,9 @@ namespace Chat.UI.Views.Screens
         //Holds all the open chat windows
         Dictionary<string, ChatWindow> _openChatsList;
 
+        //List of unaswered game request
+        Dictionary<string, Guid?> _waitingForResponse;
+
         #endregion Members
 
 
@@ -62,9 +65,15 @@ namespace Chat.UI.Views.Screens
             //Play Backgammon menu item clicked
             MainWindow.PlayEvent += MenuItem_PlayEvent;
 
+            //Game Ended recieved
+            ChatResult.GameEndedEvent += ChatResult_GameEndedEvent;
+
             _openChatsList = new Dictionary<string, ChatWindow>();
 
+            _waitingForResponse = new Dictionary<string, Guid?>();
+
         }
+
 
 
 
@@ -149,10 +158,10 @@ namespace Chat.UI.Views.Screens
         private void Chat_WindowClosedEvent(object sender, EventArgs e)
         {
             string contact = ((ChatEventArgs)e).contact;
-            Guid session= ((ChatEventArgs)e).Session;
-            if (session!=null)
+            Guid? session = ((ChatEventArgs)e).Session;
+            if (session != null)
             {
-                ChatClient.EndGame(session);
+                ChatClient.EndGame((Guid)session);
             }
             _openChatsList.Remove(contact);
         }
@@ -215,6 +224,7 @@ namespace Chat.UI.Views.Screens
         private async void ChatResult_GameRequestedEvent(object sender, EventArgs e)
         {
             string contact = ((ContactChangeEventArgs)e).Contact;
+            Guid? session = ((ContactChangeEventArgs)e).Session;
             MessageBoxResult result = MessageBox.Show($"{contact} requested a game of backgammon. Do you agree?",
                                                       $"Game Request from {contact}", MessageBoxButton.YesNo);
 
@@ -223,7 +233,7 @@ namespace Chat.UI.Views.Screens
                 await ChatClient.RespondToGameRequest(_mainVM.UserName, contact, true);
                 Dispatcher.BeginInvoke(new System.Action(() =>
                 {
-                    ActivateGame(contact);
+                    ActivateGame(contact, session);
                 }));
 
             }
@@ -241,12 +251,14 @@ namespace Chat.UI.Views.Screens
             {
                 Dispatcher.BeginInvoke(new System.Action(() =>
                 {
-                    ActivateGame(contact);
+                    ActivateGame(contact,_waitingForResponse[contact]);
+                    _waitingForResponse.Remove(contact);
                 }));
 
             }
             else
             {
+                _waitingForResponse.Remove(contact);
                 MessageBox.Show($"{contact} declined the game request");
             }
         }
@@ -263,6 +275,29 @@ namespace Chat.UI.Views.Screens
                 }));
             }
 
+        }
+
+        private void ChatResult_GameEndedEvent(object sender, EventArgs e)
+        {
+            try
+            {
+                string contact = ((ContactChangeEventArgs)e).Contact;
+
+                if (_openChatsList.ContainsKey(contact))
+                {
+                    Dispatcher.BeginInvoke(new System.Action(() =>
+                    {
+                        _openChatsList[contact].CloseChat();
+                    }));
+                    MessageBox.Show($"Game with {contact} ended");
+                    _openChatsList.Remove(contact);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                ReportError(LogLevel.Exception, ex.Message);
+            }
         }
 
         #endregion Chat Result Events
@@ -314,7 +349,8 @@ namespace Chat.UI.Views.Screens
 
         private void RequestGame(string contact)
         {
-            ChatClient.RequestGame(_mainVM.UserName, contact);
+            Guid? session = (Guid)ChatClient.RequestGame(_mainVM.UserName, contact);
+            _waitingForResponse.Add(contact, session);
         }
 
         private void ActivateGame(string contact, Guid? session = null)
@@ -323,7 +359,7 @@ namespace Chat.UI.Views.Screens
             //Chat or game window with contact is not open
             if (!_openChatsList.ContainsKey(contact))
             {
-                OpenChatWindow(contact, true);
+                OpenChatWindow(contact, true, session);
             }
             //Chat or game already open
             else
@@ -334,7 +370,7 @@ namespace Chat.UI.Views.Screens
                 {
                     window.Close();
                     _openChatsList.Remove(contact);
-                    OpenChatWindow(contact, true);
+                    OpenChatWindow(contact, true, session);
                 }
 
                 //game is open 
@@ -346,10 +382,9 @@ namespace Chat.UI.Views.Screens
             }
         }
 
-        private void OpenChatWindow(string contact, bool isGame)
+        private void OpenChatWindow(string contact, bool isGame, Guid? session = null)
         {
-            ChatWindow chat = new ChatWindow(contact, isGame);
-            chat.IsGame = isGame;
+            ChatWindow chat = new ChatWindow(contact, isGame,session);
             _openChatsList.Add(contact, chat);
             chat.Show();
             chat.WindowClosedEvent += Chat_WindowClosedEvent;

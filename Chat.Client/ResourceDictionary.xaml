@@ -74,10 +74,11 @@
 
     <!--#region Pieces Template-->
 
-    <DataTemplate x:Key="PiecesTemplate" DataType="{x:Type ListViewItem}">
-        <Ellipse Fill="{Binding}"  Height="40" Width="40" Stroke="Black" IsEnabled="False"/>
+    <DataTemplate x:Key="PiecesTemplate">
+        <Ellipse Fill="{Binding}"  Height="40" Width="40" Stroke="Black" Focusable="False"/>
     </DataTemplate>
 
     <!--#endregion Pieces Template-->
+    
 
 </ResourceDictionary>
