@@ -28,7 +28,7 @@ namespace Chat.UI.Views.Screens
     {
 
         #region Properties and Fields
-                
+
         Triangle[] _triangles;
 
         //Timer for animations
@@ -70,19 +70,33 @@ namespace Chat.UI.Views.Screens
         private void ItemsControl_MouseEnter(object sender, MouseEventArgs e)
         //Animate highlighting triangle with mouse
         {
-            ItemsControl control = (ItemsControl)sender;
-            string controlName = control.Name;
-            int controlNum = int.Parse(controlName.Remove(0, 1));
-            BackgammonAnimations.AnimateMouseOverStack(_triangles[controlNum], Colors.Blue, true);
+            //Only activate after dice roll
+            if (VM.IsWaitingForMove)
+            {
+                ItemsControl control = (ItemsControl)sender;
+                if ((string)control.Items[0] == "White")
+                {
+                    string controlName = control.Name;
+                    int controlNum = int.Parse(controlName.Remove(0, 1));
+                    BackgammonAnimations.AnimateMouseOverStack(_triangles[controlNum], Colors.Blue, true);
+                }
+            }
         }
 
         private void ItemsControl_MouseLeaves(object sender, MouseEventArgs e)
         //Stop animating highlighting triangle with mouse
         {
-            ItemsControl control = (ItemsControl)sender;
-            string controlName = control.Name;
-            int controlNum = int.Parse(controlName.Remove(0, 1));
-            BackgammonAnimations.AnimateMouseOverStack(_triangles[controlNum], Colors.Blue, false);
+            //Only activate after dice roll
+            if (VM.IsWaitingForMove)
+            {
+                ItemsControl control = (ItemsControl)sender;
+                if ((string)control.Items[0] == "White")
+                {
+                    string controlName = control.Name;
+                    int controlNum = int.Parse(controlName.Remove(0, 1));
+                    BackgammonAnimations.AnimateMouseOverStack(_triangles[controlNum], Colors.Blue, false);
+                }
+            }
 
         }
 
@@ -145,8 +159,8 @@ namespace Chat.UI.Views.Screens
         {
             _timerCounter++;
 
-            diceA_im.Source = VM.DiceImages[rand.Next(0, 6)];
-            diceB_im.Source = VM.DiceImages[rand.Next(0, 6)];
+            diceA_im.Source = VM.DiceImagesList[rand.Next(0, 6)];
+            diceB_im.Source = VM.DiceImagesList[rand.Next(0, 6)];
 
             if (_timerCounter > 10)
             {
@@ -155,7 +169,10 @@ namespace Chat.UI.Views.Screens
                 VM.Game.RollDice();
                 diceA_im.Source = VM.DiceImage[0];
                 diceB_im.Source = VM.DiceImage[1];
-                rollDice_b.IsEnabled = true;
+                
+                VM.IsWaitingForMove = true;
+                VM.Game.GetListOfPossibleMoves();
+        
             }
         }
 

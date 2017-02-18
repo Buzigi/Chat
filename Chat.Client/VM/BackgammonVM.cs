@@ -15,7 +15,7 @@ namespace Chat.Client.VM
     {
         #region Properties and Fields
 
-        public BitmapImage[] DiceImages { get; set; }
+        public BitmapImage[] DiceImagesList { get; set; }
         
         public BackgammonGame Game { get; set; }
 
@@ -28,6 +28,8 @@ namespace Chat.Client.VM
         public BitmapImage[] DiceImage { get; set; }
 
         public bool IsWaiting { get; set; }
+
+        public bool IsWaitingForMove { get; set; }
 
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -44,7 +46,7 @@ namespace Chat.Client.VM
             PropertyChanged?.Invoke(null, new PropertyChangedEventArgs("PlayerA"));
             PropertyChanged?.Invoke(null, new PropertyChangedEventArgs("PlayerB"));
             InitDiceImageList();
-            
+            IsWaitingForMove = false;
             Game = new BackgammonGame();
             Game.PropertyChanged += Game_PropertyChanged;
         }
@@ -69,15 +71,15 @@ namespace Chat.Client.VM
         private void InitDiceImageList()
         {
             DiceImage = new BitmapImage[2];
-            DiceImages = new BitmapImage[6];
-            DiceImages[0] = new BitmapImage(new Uri("../../Images/1.PNG", UriKind.Relative));
-            DiceImages[1] = new BitmapImage(new Uri("../../Images/2.PNG", UriKind.Relative));
-            DiceImages[2] = new BitmapImage(new Uri("../../Images/3.PNG", UriKind.Relative));
-            DiceImages[3] = new BitmapImage(new Uri("../../Images/4.PNG", UriKind.Relative));
-            DiceImages[4] = new BitmapImage(new Uri("../../Images/5.PNG", UriKind.Relative));
-            DiceImages[5] = new BitmapImage(new Uri("../../Images/6.PNG", UriKind.Relative));
-            DiceImage[0] = DiceImages[0];
-            DiceImage[1] = DiceImages[0];
+            DiceImagesList = new BitmapImage[6];
+            DiceImagesList[0] = new BitmapImage(new Uri("../../Images/1.PNG", UriKind.Relative));
+            DiceImagesList[1] = new BitmapImage(new Uri("../../Images/2.PNG", UriKind.Relative));
+            DiceImagesList[2] = new BitmapImage(new Uri("../../Images/3.PNG", UriKind.Relative));
+            DiceImagesList[3] = new BitmapImage(new Uri("../../Images/4.PNG", UriKind.Relative));
+            DiceImagesList[4] = new BitmapImage(new Uri("../../Images/5.PNG", UriKind.Relative));
+            DiceImagesList[5] = new BitmapImage(new Uri("../../Images/6.PNG", UriKind.Relative));
+            DiceImage[0] = DiceImagesList[0];
+            DiceImage[1] = DiceImagesList[0];
             PropertyChanged?.Invoke(null, new PropertyChangedEventArgs("DiceImage"));
         }
         
@@ -90,8 +92,8 @@ namespace Chat.Client.VM
             }
             else if (e.PropertyName == "Dice")
             {
-                DiceImage[0] = DiceImages[Game.Dice[0]];
-                DiceImage[1] = DiceImages[Game.Dice[1]];
+                DiceImage[0] = DiceImagesList[Game.Dice[0]];
+                DiceImage[1] = DiceImagesList[Game.Dice[1]];
                 PropertyChanged?.Invoke(null, new PropertyChangedEventArgs("DiceImage"));
             }
         }

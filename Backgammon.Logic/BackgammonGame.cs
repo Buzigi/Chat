@@ -62,7 +62,7 @@ namespace Backgammon.Logic
 
         private void SetNewGameBoard()
         {
-            for (int i = 0; i < 24 ; i++)
+            for (int i = 0; i < 24; i++)
             {
                 Board[i] = new List<string>();
             }
@@ -82,15 +82,25 @@ namespace Backgammon.Logic
             PropertyChanged?.Invoke(null, new PropertyChangedEventArgs("Board"));
         }
 
-    private void AddToBoard(int index, string color, int numOfPieces)
-    {
-        for (int i = 0; i < numOfPieces; i++)
+        private void AddToBoard(int index, string color, int numOfPieces)
         {
-            Board[index].Add(color);
+            for (int i = 0; i < numOfPieces; i++)
+            {
+                Board[index].Add(color);
+            }
         }
+
+
+        #endregion Private Methods
+
+        #region Public Methods
+
+        public void GetListOfPossibleMoves()
+        {
+            throw new NotImplementedException();
+        }
+
+
+        #endregion Public Methods
     }
-
-
-    #endregion Private Methods
-}
 }
