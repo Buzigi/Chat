@@ -28,13 +28,11 @@ namespace Chat.UI.Views.Screens
     {
 
         #region Properties and Fields
-
-        //number of seconds to animate dice roll
-        
+                
         Triangle[] _triangles;
 
+        //Timer for animations
         DispatcherTimer _timer;
-
         int _timerCounter;
 
         Random rand;
@@ -70,6 +68,7 @@ namespace Chat.UI.Views.Screens
         #region UI Events
 
         private void ItemsControl_MouseEnter(object sender, MouseEventArgs e)
+        //Animate highlighting triangle with mouse
         {
             ItemsControl control = (ItemsControl)sender;
             string controlName = control.Name;
@@ -78,6 +77,7 @@ namespace Chat.UI.Views.Screens
         }
 
         private void ItemsControl_MouseLeaves(object sender, MouseEventArgs e)
+        //Stop animating highlighting triangle with mouse
         {
             ItemsControl control = (ItemsControl)sender;
             string controlName = control.Name;
@@ -126,6 +126,7 @@ namespace Chat.UI.Views.Screens
         }
 
         private void AddTriangle(int i, int column, int row, int span, Triangle.Orientation orientation)
+        //Add triangle shaped to stack of pieces
         {
             Triangle t = new Triangle();
             t.Stroke = Brushes.Black;

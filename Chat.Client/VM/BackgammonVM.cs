@@ -27,6 +27,8 @@ namespace Chat.Client.VM
 
         public BitmapImage[] DiceImage { get; set; }
 
+        public bool IsWaiting { get; set; }
+
 
         public event PropertyChangedEventHandler PropertyChanged;
 

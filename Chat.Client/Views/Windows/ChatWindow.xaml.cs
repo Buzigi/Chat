@@ -33,7 +33,7 @@ namespace Chat.UI.Views.Screens
 
         public event EventHandler WindowClosedEvent;
 
-        public ChatWindow(string contact, bool isGame = false,Guid? session = null)
+        public ChatWindow(string contact, bool isGame = false, bool isMyTurn = false,Guid? session = null)
         {
             InitializeComponent();
             _mainVM = MainVM.Instance;
@@ -47,6 +47,7 @@ namespace Chat.UI.Views.Screens
                 this.Height = 700;
                 gameVM = new BackgammonVM(_mainVM.UserName, contact);
                 gameVM.Session = session;
+                gameVM.IsWaiting = isMyTurn;
                 chatControl_cc.Content = new BackgammonScreen(gameVM);
             }
             else

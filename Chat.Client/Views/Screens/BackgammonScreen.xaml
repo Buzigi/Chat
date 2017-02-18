@@ -57,6 +57,7 @@
                 <Image Name="diceB_im" Source="{Binding DiceImage[1]}" Width="50" Height="50"/>
             </Border>
         </StackPanel>
+        <local:WaitScreen Style="{StaticResource WaitStyle}" Grid.Column="14" Grid.Row="4" Grid.RowSpan="4"/>
 
         <!--#region Columns-->
 

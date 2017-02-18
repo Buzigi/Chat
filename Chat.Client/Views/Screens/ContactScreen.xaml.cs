@@ -233,7 +233,7 @@ namespace Chat.UI.Views.Screens
                 await ChatClient.RespondToGameRequest(_mainVM.UserName, contact, true);
                 Dispatcher.BeginInvoke(new System.Action(() =>
                 {
-                    ActivateGame(contact, session);
+                    ActivateGame(contact, false, session);
                 }));
 
             }
@@ -251,7 +251,7 @@ namespace Chat.UI.Views.Screens
             {
                 Dispatcher.BeginInvoke(new System.Action(() =>
                 {
-                    ActivateGame(contact,_waitingForResponse[contact]);
+                    ActivateGame(contact,true, _waitingForResponse[contact]);
                     _waitingForResponse.Remove(contact);
                 }));
 
@@ -353,13 +353,13 @@ namespace Chat.UI.Views.Screens
             _waitingForResponse.Add(contact, session);
         }
 
-        private void ActivateGame(string contact, Guid? session = null)
+        private void ActivateGame(string contact, bool isMyTurn, Guid? session = null)
         {
             ChatWindow window;
             //Chat or game window with contact is not open
             if (!_openChatsList.ContainsKey(contact))
             {
-                OpenChatWindow(contact, true, session);
+                OpenChatWindow(contact, true, isMyTurn, session);
             }
             //Chat or game already open
             else
@@ -370,7 +370,7 @@ namespace Chat.UI.Views.Screens
                 {
                     window.Close();
                     _openChatsList.Remove(contact);
-                    OpenChatWindow(contact, true, session);
+                    OpenChatWindow(contact, true, isMyTurn, session);
                 }
 
                 //game is open 
@@ -382,9 +382,9 @@ namespace Chat.UI.Views.Screens
             }
         }
 
-        private void OpenChatWindow(string contact, bool isGame, Guid? session = null)
+        private void OpenChatWindow(string contact, bool isGame, bool isMyTurn = false, Guid? session = null)
         {
-            ChatWindow chat = new ChatWindow(contact, isGame,session);
+            ChatWindow chat = new ChatWindow(contact, isGame, isMyTurn, session);
             _openChatsList.Add(contact, chat);
             chat.Show();
             chat.WindowClosedEvent += Chat_WindowClosedEvent;
