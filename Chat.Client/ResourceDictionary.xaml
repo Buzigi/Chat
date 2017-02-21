@@ -75,10 +75,20 @@
     <!--#region Pieces Template-->
 
     <DataTemplate x:Key="PiecesTemplate">
-        <Ellipse Fill="{Binding}"  Height="40" Width="40" Stroke="Black" Focusable="False"/>
+        <Ellipse Fill="{Binding}"  Height="50" Width="50" Stroke="Black" Focusable="False"/>
     </DataTemplate>
 
     <!--#endregion Pieces Template-->
     
+    <!--#region Dice Items Template-->
+
+    <DataTemplate x:Key="DiceTemplate">
+        <Border BorderThickness="2" BorderBrush="Black" Width="40" Height="40">
+            <Image Source="{Binding}" />
+        </Border>
+    </DataTemplate>
+
+    <!--#endregion Dice Items Template-->
+
 
 </ResourceDictionary>

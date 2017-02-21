@@ -15,8 +15,10 @@ namespace Chat.Client.VM
     {
         #region Properties and Fields
 
-        public BitmapImage[] DiceImagesList { get; set; }
-        
+        Random rand;
+
+        BitmapImage[] _diceImagesList { get; set; }
+
         public BackgammonGame Game { get; set; }
 
         public string PlayerA { get; set; }
@@ -25,11 +27,15 @@ namespace Chat.Client.VM
 
         public Guid? Session { get; set; }
 
-        public BitmapImage[] DiceImage { get; set; }
+        public List<BitmapImage> DiceImage { get; set; }
 
         public bool IsWaiting { get; set; }
 
         public bool IsWaitingForMove { get; set; }
+
+        public int PieceToMove { get; set; }
+
+        public List<int> MovesPerPiece { get; set; }
 
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -49,6 +55,7 @@ namespace Chat.Client.VM
             IsWaitingForMove = false;
             Game = new BackgammonGame();
             Game.PropertyChanged += Game_PropertyChanged;
+            rand = new Random();
         }
 
 
@@ -61,7 +68,10 @@ namespace Chat.Client.VM
             Session = ChatClient.AddSession(PlayerA, PlayerB);
         }
 
-
+        public void GetPossibleMovesPerPiece(int pieceStack)
+        {
+            MovesPerPiece = Game.GetPossibleMoves(pieceStack);
+        }
 
         #endregion Public Methods
 
@@ -70,19 +80,19 @@ namespace Chat.Client.VM
 
         private void InitDiceImageList()
         {
-            DiceImage = new BitmapImage[2];
-            DiceImagesList = new BitmapImage[6];
-            DiceImagesList[0] = new BitmapImage(new Uri("../../Images/1.PNG", UriKind.Relative));
-            DiceImagesList[1] = new BitmapImage(new Uri("../../Images/2.PNG", UriKind.Relative));
-            DiceImagesList[2] = new BitmapImage(new Uri("../../Images/3.PNG", UriKind.Relative));
-            DiceImagesList[3] = new BitmapImage(new Uri("../../Images/4.PNG", UriKind.Relative));
-            DiceImagesList[4] = new BitmapImage(new Uri("../../Images/5.PNG", UriKind.Relative));
-            DiceImagesList[5] = new BitmapImage(new Uri("../../Images/6.PNG", UriKind.Relative));
-            DiceImage[0] = DiceImagesList[0];
-            DiceImage[1] = DiceImagesList[0];
+            _diceImagesList = new BitmapImage[6];
+            _diceImagesList[0] = new BitmapImage(new Uri("../../Images/1.PNG", UriKind.Relative));
+            _diceImagesList[1] = new BitmapImage(new Uri("../../Images/2.PNG", UriKind.Relative));
+            _diceImagesList[2] = new BitmapImage(new Uri("../../Images/3.PNG", UriKind.Relative));
+            _diceImagesList[3] = new BitmapImage(new Uri("../../Images/4.PNG", UriKind.Relative));
+            _diceImagesList[4] = new BitmapImage(new Uri("../../Images/5.PNG", UriKind.Relative));
+            _diceImagesList[5] = new BitmapImage(new Uri("../../Images/6.PNG", UriKind.Relative));
+            DiceImage = new List<BitmapImage>();
+            DiceImage.Add(_diceImagesList[0]);
+            DiceImage.Add(_diceImagesList[0]);
             PropertyChanged?.Invoke(null, new PropertyChangedEventArgs("DiceImage"));
         }
-        
+
 
         private void Game_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -92,10 +102,21 @@ namespace Chat.Client.VM
             }
             else if (e.PropertyName == "Dice")
             {
-                DiceImage[0] = DiceImagesList[Game.Dice[0]];
-                DiceImage[1] = DiceImagesList[Game.Dice[1]];
+                DiceImage = new List<BitmapImage>();
+                foreach (int dice in Game.Dice)
+                {
+                    DiceImage.Add(_diceImagesList[dice - 1]);
+                }
                 PropertyChanged?.Invoke(null, new PropertyChangedEventArgs("DiceImage"));
             }
+        }
+
+        internal void AnimateDiceRoll()
+        {
+            DiceImage = new List<BitmapImage>();
+            DiceImage.Add(_diceImagesList[rand.Next(0,6)]);
+            DiceImage.Add(_diceImagesList[rand.Next(0, 6)]);
+            PropertyChanged?.Invoke(null, new PropertyChangedEventArgs("DiceImage"));
         }
 
         #endregion Private Methods
