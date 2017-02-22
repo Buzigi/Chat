@@ -12,13 +12,14 @@
                 <Setter Property="Visibility" Value="Visible" />
             </DataTrigger>
             <DataTrigger Binding="{Binding IsWaiting}" Value="False">
-                <Setter Property="Panel.ZIndex" Value="-999" />
+                <Setter Property="Panel.ZIndex" Value="-100" />
                 <Setter Property="Visibility" Value="Hidden" />
             </DataTrigger>
         </Style.Triggers>
     </Style>
 
     <!--#endregion Waiting window Triggers-->
+
 
     <!--#region Switching displayed screen-->
     <DataTemplate x:Key="WelcomeControl">
@@ -31,6 +32,7 @@
     </DataTemplate>
 
     <!--#endregion Switching displayed screen-->
+
 
     <!--#region Chat List View Style-->
     <Style x:Key="MessageListBoxStyle" TargetType="ListBox">
@@ -72,14 +74,51 @@
 
     <!--#endregion Chat List View Style-->
 
+
     <!--#region Pieces Template-->
 
     <DataTemplate x:Key="PiecesTemplate">
-        <Ellipse Fill="{Binding}"  Height="50" Width="50" Stroke="Black" Focusable="False"/>
+        <Ellipse Fill="{Binding}"  Height="44" Width="44" Stroke="Black" Focusable="False"/>
     </DataTemplate>
 
     <!--#endregion Pieces Template-->
-    
+
+
+    <!--#region ItemsControl Style-->
+
+    <Style x:Key="TopStackStyle" TargetType="ItemsControl">
+        <Setter Property="Panel.ZIndex" Value="1"/>
+        <Setter Property="VerticalAlignment" Value="Top" />
+        <Setter Property="Height" Value="300" />
+        <Setter Property="Width" Value="45" />
+        <Setter Property="ItemTemplate" Value="{StaticResource PiecesTemplate}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        
+    </Style>
+
+    <Style x:Key="BottomStackStyle" TargetType="ItemsControl">
+        <Setter Property="Panel.ZIndex" Value="1"/>
+        <Setter Property="VerticalAlignment" Value="Bottom" />
+        <Setter Property="Height" Value="300" />
+        <Setter Property="Width" Value="45" />
+        <Setter Property="ItemTemplate" Value="{StaticResource PiecesTemplate}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="ItemsPanel">
+            <Setter.Value>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel VerticalAlignment="Bottom"/>
+                </ItemsPanelTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!--#endregion ItemsControl Style-->
+
+
     <!--#region Dice Items Template-->
 
     <DataTemplate x:Key="DiceTemplate">

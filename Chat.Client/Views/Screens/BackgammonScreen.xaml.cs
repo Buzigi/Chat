@@ -34,14 +34,19 @@ namespace Chat.UI.Views.Screens
 
         Triangle[] _triangles;
 
-        int animatedTriangle;
-        
+        List<int> animatedTriangles;
+
+        ItemsControl fromControl;
+        ItemsControl toControl;
+
+        Random rand;
+
         //Timer for animations
         DispatcherTimer _timer;
         int _timerCounter;
 
         #endregion Animations Fields
-        
+
         public BackgammonVM VM { get; set; }
 
         #endregion Properties and Fields
@@ -56,12 +61,20 @@ namespace Chat.UI.Views.Screens
             this.DataContext = VM;
             chat_cc.Content = new ChatScreen(VM.PlayerA, VM.PlayerB);
             AddTriangles();
+            animatedTriangles = new List<int>();
+            rand = new Random();
 
             _timer = new DispatcherTimer();
             _timer.Interval = TimeSpan.FromMilliseconds(200);
             _timer.Tick += _timer_Tick;
             VM.PropertyChanged += VM_PropertyChanged;
+            DisplayWaitingScreen(VM.IsWaiting);
         }
+
+
+        #endregion C'tor
+
+        #region Event Handlers
 
         private void VM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
@@ -69,12 +82,13 @@ namespace Chat.UI.Views.Screens
             {
                 diceControl_ic.ItemsSource = VM.DiceImage;
             }
+
+            if (e.PropertyName == "IsWaiting")
+            {
+                DisplayWaitingScreen(VM.IsWaiting);
+            }
         }
 
-
-        #endregion C'tor
-
-        #region UI Events
 
         private void ItemsControl_MouseEnter(object sender, MouseEventArgs e)
         //Animate highlighting triangle with mouse
@@ -87,15 +101,16 @@ namespace Chat.UI.Views.Screens
                 //Mouse over jail
                 if (control.Name == "jailA")
                 {
-                    BackgammonAnimations.AnimateMouseOverStack(control, Colors.Cyan, true);
+                    StartAnimation(-1, Colors.Cyan);
                 }
 
                 //Mouse over board piece
                 else
                 {
-                    if ((string)control.Items[0] == "White")
+                    if (control.Items.Count != 0 && (string)control.Items[0] == "White")
                     {
-                        BackgammonAnimations.AnimateMouseOverStack(_triangles[GetStacknum(control)], Colors.Cyan, true);
+                        int stackNum = GetStackNum(control);
+                        StartAnimation(stackNum, Colors.Cyan);
                     }
                 }
             }
@@ -107,21 +122,7 @@ namespace Chat.UI.Views.Screens
             //Only activate after dice roll
             if (VM.IsWaitingForMove)
             {
-                ItemsControl control = (ItemsControl)sender;
-                //Mouse over jail
-                if (control.Name == "jailA")
-                {
-                    BackgammonAnimations.AnimateMouseOverStack(control, null, false);
-                }
-
-                //Mouse over board piece
-                else
-                {
-                    if ((string)control.Items[0] == "White")
-                    {
-                        BackgammonAnimations.AnimateMouseOverStack(_triangles[GetStacknum(control)], null, false);
-                    }
-                }
+                StopAnimation();
             }
 
         }
@@ -129,32 +130,84 @@ namespace Chat.UI.Views.Screens
         private void rollDice_b_Click(object sender, RoutedEventArgs e)
         {
             rollDice_b.IsEnabled = false;
+            VM.PieceToMove = -2;
             _timer.Start();
         }
 
         private void stack_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            //First click - select piece to move
-            if (animatedTriangle == -1 || GetStacknum((ItemsControl)sender) != animatedTriangle)
+            if (!VM.IsWaiting)
             {
-                //Turn off previous animations
-                AnimatePossibleMoves((ItemsControl)sender, false);
+                int stackNum = GetStackNum((ItemsControl)sender);
 
-                //Animate possible moves
-                AnimatePossibleMoves((ItemsControl)sender, true);
-                animatedTriangle = GetStacknum((ItemsControl)sender);
+                //First click - select piece to move
+                if (VM.PieceToMove == -2)
+                {
+                    StopAnimation();
+
+                    //Animate possible moves
+                    AnimatePossibleMoves(stackNum);
+                    VM.PieceToMove = stackNum;
+                    fromControl = (ItemsControl)sender;
+                    VM.IsWaitingForMove = false;
+                }
+
+                //Second Click - selected To stack is in the list of possible moves
+                else if (VM.MovesPerPiece.Contains(stackNum))
+                {
+                    StopAnimation();
+                    toControl = (ItemsControl)sender;
+
+                    MovePiece(stackNum);
+
+                    if (VM.Game.Dice.Count == 0)
+                    {
+                        VM.IsWaiting = true;
+                        VM.SendMoveToOtherPlayer(VM.PieceToMove, stackNum);
+                    }
+
+                    VM.PieceToMove = -2;
+
+
+                    VM.IsWaitingForMove = true;
+
+                }
+
+                //Second click - selected To stack is not in the list of possible moves
+                else
+                {
+                    StopAnimation();
+
+                    VM.PieceToMove = -2;
+
+                    VM.IsWaitingForMove = true;
+                }
             }
-
-            //Second click - select stack to move to
-            //else
-            //{
-            //    //Turn off previous animations
-            //    AnimatePossibleMoves((ItemsControl)sender, false);
-            //    VM.Game.movePiece()
-            //}
         }
 
-        #endregion UI Events
+        private void _timer_Tick(object sender, EventArgs e)
+        {
+            _timerCounter++;
+
+            VM.AnimateDiceRoll(rand.Next(1,7), rand.Next(1, 7));
+
+            if (_timerCounter > 10)
+            {
+                _timer.Stop();
+                _timerCounter = 0;
+                VM.Game.RollDice();
+
+                if (VM.Game.PossibleMoves.Count == 0)
+                {
+                    EndTurn();
+                }
+
+                VM.IsWaitingForMove = true;
+                animatedTriangles.Clear();
+            }
+        }
+
+        #endregion Event Handlers
 
 
         #region Private Methods
@@ -186,8 +239,8 @@ namespace Chat.UI.Views.Screens
             }
         }
 
-        private void AddTriangle(int i, int column, int row, int span, Triangle.Orientation orientation)
         //Add triangle shaped to stack of pieces
+        private void AddTriangle(int i, int column, int row, int span, Triangle.Orientation orientation)
         {
             Triangle t = new Triangle();
             t.Stroke = Brushes.Black;
@@ -202,62 +255,111 @@ namespace Chat.UI.Views.Screens
             _triangles[i] = (t);
         }
 
-        private void _timer_Tick(object sender, EventArgs e)
+
+        //Returns the number of stack from the selected control
+        private static int GetStackNum(ItemsControl control)
         {
-            _timerCounter++;
+            string controlName = control.Name;
 
-            VM.AnimateDiceRoll();
-
-            if (_timerCounter > 10)
+            if (controlName == "jailA")
             {
-                _timer.Stop();
-                _timerCounter = 0;
-                VM.Game.RollDice();
-                //if no possible moves...
+                return -1;
+            }
 
-                VM.IsWaitingForMove = true;
-                animatedTriangle = -1;
+            else if (controlName == "endStackA")
+            {
+                return -2;
+            }
+
+            controlName = controlName.Remove(0, 1);
+
+            return int.Parse(controlName);
+
+        }
+
+        private void EndTurn()
+        {
+            MessageBox.Show("Turn Ended");
+        }
+
+        private void StartAnimation(int stack, Color color)
+        {
+            if (!animatedTriangles.Contains(stack))
+            {
+                animatedTriangles.Add(stack);
+                if (stack == -2)
+                {
+                    BackgammonAnimations.AnimateMouseOverStack(endStackA, color, true);
+                }
+                else if (stack == -2)
+                {
+                    BackgammonAnimations.AnimateMouseOverStack(jailA, color, true);
+                }
+                else
+                {
+                    BackgammonAnimations.AnimateMouseOverStack(_triangles[stack], color, true);
+                }
             }
         }
 
-        private static int GetStacknum(ItemsControl control)
+        //stop all animations
+        private void StopAnimation()
         {
-            string controlName = control.Name;
-            int controlNum = int.Parse(controlName.Remove(0, 1));
-            return controlNum;
+            foreach (int stack in animatedTriangles)
+            {
+                if (stack == -2)
+                {
+                    BackgammonAnimations.AnimateMouseOverStack(endStackA, Colors.LightGreen, false);
+                }
+                else
+                {
+                    BackgammonAnimations.AnimateMouseOverStack(_triangles[stack], Colors.LightGreen, false);
+                }
+            }
+            animatedTriangles.Clear();
+        }
+
+        private void AnimatePossibleMoves(int stackNum)
+        {
+            if (VM.IsWaitingForMove)
+            {
+                List<int> moves = VM.Game.GetPossibleMoves(stackNum);
+                foreach (int stack in moves)
+                {
+                    StartAnimation(stack, Colors.LightGreen);
+
+                }
+            }
+        }
+
+        private void MovePiece(int toStack)
+        {
+            VM.ControlVisibility = 0;
+            VM.Game.MovePiece(VM.PieceToMove, toStack, 0);
+            VM.ControlVisibility = 100;
+        }
+
+        private void DisplayWaitingScreen(bool display)
+        {
+            int zIndex;
+            Visibility vis;
+            if (display)
+            {
+                zIndex = 999;
+                vis = Visibility.Visible;
+            }
+            else
+            {
+                zIndex = -999;
+                vis = Visibility.Hidden;
+                rollDice_b.IsEnabled = true;
+                VM.IsWaitingForMove = false;
+            }
+            Panel.SetZIndex(wait_c, zIndex);
+            wait_c.Visibility = vis;
         }
 
         #endregion Private Methods
 
-
-        private void AnimatePossibleMoves(ItemsControl control, bool work)
-        {
-            if (VM.IsWaitingForMove)
-            {
-                int stackNum;
-                if (!work)
-                {
-                    stackNum = animatedTriangle;
-                }
-                else
-                {
-                    stackNum = GetStacknum(control);
-                    animatedTriangle = stackNum;
-                }
-                List<int> moves = VM.Game.GetPossibleMoves(stackNum);
-                foreach (int stack in moves)
-                {
-                    if (stack == -2)
-                    {
-                        BackgammonAnimations.AnimateMouseOverStack(endStackA, Colors.LightGreen, work);
-                    }
-                    else
-                    {
-                        BackgammonAnimations.AnimateMouseOverStack(_triangles[stack], Colors.LightGreen, work);
-                    }                    
-
-                }
-            }
-        }
     }
 }

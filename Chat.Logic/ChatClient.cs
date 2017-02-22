@@ -205,7 +205,7 @@ namespace Chat.Logic
             }
             catch (Exception e)
             {
-                Report.log(DeviceToReport.Client_Proxy, LogLevel.Exception, $"Message was nit send in session {session}");
+                Report.log(DeviceToReport.Client_Proxy, LogLevel.Exception, $"Message was not send in session {session}");
                 Report.log(DeviceToReport.Client_Proxy, LogLevel.Exception, e.Message);
                 throw e;
             }
@@ -254,6 +254,22 @@ namespace Chat.Logic
                 Report.log(DeviceToReport.Client_Proxy, LogLevel.Exception, $"Game was not opened");
                 Report.log(DeviceToReport.Client_Proxy, LogLevel.Exception, e.Message);
                 return null;
+            }
+        }
+
+        //Send a move played to other player
+        public static void SendMove(Guid session, int fromStack, int toStack)
+        {
+            try
+            {
+                proxy.SendMove(session, fromStack, toStack);
+                Report.log(DeviceToReport.Client_Proxy, LogLevel.Information, $"Move sent in session {session}");
+            }
+            catch (Exception e)
+            {
+                Report.log(DeviceToReport.Client_Proxy, LogLevel.Exception, $"Move was not send in session {session}");
+                Report.log(DeviceToReport.Client_Proxy, LogLevel.Exception, e.Message);
+                throw e;
             }
         }
 

@@ -47,8 +47,8 @@ namespace Contracts
         [OperationContract(IsOneWay = true)]
         void EndGame(Guid session);
 
-        [OperationContract]
-        bool SendMove(Guid session, int pieceIndex, int moves);
+        [OperationContract(IsOneWay =true)]
+        void SendMove(Guid session, int pieceIndex, int moves);
 
         [OperationContract]
         bool RestartGame(Guid session);

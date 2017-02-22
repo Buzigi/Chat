@@ -61,5 +61,6 @@ namespace Chat.Client.Views
             {
             }
         }
+        
     }
 }

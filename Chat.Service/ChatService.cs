@@ -293,9 +293,28 @@ namespace Service
             }
         }
 
-        public bool SendMove(Guid session, int pieceIndex, int moves)
+        public void SendMove(Guid session, int pieceIndex, int moves)
         {
-            throw new NotImplementedException();
+            try
+            {
+                //Reciever still online
+                if (_sessions.ContainsKey(session))
+                {
+                    string reciever = _sessionDetails[session][1];
+                    _sessions[session].GetMove(pieceIndex, moves);
+                    Report($"Move recieved by {reciever}", LogLevel.Information);
+
+                }
+                //Reciever offline
+                {
+                    Report($"Move was not recieved - reciever offline", LogLevel.Warning);
+                }
+            }
+            catch (Exception e)
+            {
+                Report($"Move was not sent", LogLevel.Exception);
+                Report(e.Message, LogLevel.Exception);
+            }
         }
 
         #endregion IBackgammonService Implementation

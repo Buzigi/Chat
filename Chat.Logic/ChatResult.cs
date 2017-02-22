@@ -25,6 +25,8 @@ namespace Chat.Logic
 
         public static event EventHandler GameEndedEvent;
 
+        public static event EventHandler MoveRecievedEvent;
+
         #endregion Properties and Members
 
 
@@ -84,9 +86,9 @@ namespace Chat.Logic
             MessagesListRecievedEvent?.Invoke(null, new MessageListsEventArgs(messages, reciever));
         }
 
-        public void GetMove(string contact, int piece, int moves)
+        public void GetMove(int piece, int moves)
         {
-            throw new NotImplementedException();
+            MoveRecievedEvent?.Invoke(null, new MoveEventArgs(piece, moves));
         }
 
         public void NewGameResponse(string contact, bool isAccepted)
@@ -139,6 +141,19 @@ namespace Chat.Logic
         {
             Contact = contact;
             IsAccepted = isAccepted;
+        }
+    }
+
+    public class MoveEventArgs : EventArgs
+    {
+        public string Contact { get; set; }
+        public int From { get; set; }
+        public int To { get; set; }
+
+        public MoveEventArgs(int from, int to)
+        {
+            From = from;
+            To = to;
         }
     }
 }

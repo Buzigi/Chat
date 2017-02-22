@@ -1,5 +1,6 @@
 ﻿using Backgammon.Logic;
 using Chat.Logic;
+using Chat.UI;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -15,7 +16,6 @@ namespace Chat.Client.VM
     {
         #region Properties and Fields
 
-        Random rand;
 
         BitmapImage[] _diceImagesList { get; set; }
 
@@ -29,11 +29,34 @@ namespace Chat.Client.VM
 
         public List<BitmapImage> DiceImage { get; set; }
 
-        public bool IsWaiting { get; set; }
+        private bool _isWaiting;
+        public bool IsWaiting
+        {
+            get { return _isWaiting; }
+            set
+            {
+                _isWaiting = value;
+                PropertyChanged?.Invoke(null, new PropertyChangedEventArgs("IsWaiting"));
+            }
+        }
 
         public bool IsWaitingForMove { get; set; }
 
-        public int PieceToMove { get; set; }
+        public double ControlVisibility { get; set; }
+
+        int _pieceToMove;
+        public int PieceToMove
+        {
+            get
+            {
+                return _pieceToMove;
+            }
+            set
+            {
+                _pieceToMove = value;
+                GetPossibleMovesPerPiece();
+            }
+        }
 
         public List<int> MovesPerPiece { get; set; }
 
@@ -55,8 +78,9 @@ namespace Chat.Client.VM
             IsWaitingForMove = false;
             Game = new BackgammonGame();
             Game.PropertyChanged += Game_PropertyChanged;
-            rand = new Random();
+            ChatResult.MoveRecievedEvent += ChatResult_MoveRecievedEvent;
         }
+
 
 
         #endregion C'tor
@@ -68,9 +92,22 @@ namespace Chat.Client.VM
             Session = ChatClient.AddSession(PlayerA, PlayerB);
         }
 
-        public void GetPossibleMovesPerPiece(int pieceStack)
+        public void GetPossibleMovesPerPiece()
         {
-            MovesPerPiece = Game.GetPossibleMoves(pieceStack);
+            MovesPerPiece = Game.GetPossibleMoves(PieceToMove);
+        }
+
+        internal void AnimateDiceRoll(int d1, int d2)
+        {
+            DiceImage = new List<BitmapImage>();
+            DiceImage.Add(_diceImagesList[d1 - 1]);
+            DiceImage.Add(_diceImagesList[d2 - 1]);
+            PropertyChanged?.Invoke(null, new PropertyChangedEventArgs("DiceImage"));
+        }
+
+        internal void SendMoveToOtherPlayer(int fromStack, int toStack)
+        {
+            ChatClient.SendMove((Guid)Session, fromStack, toStack);
         }
 
         #endregion Public Methods
@@ -93,12 +130,15 @@ namespace Chat.Client.VM
             PropertyChanged?.Invoke(null, new PropertyChangedEventArgs("DiceImage"));
         }
 
+        #endregion Private Methods
+
+        #region Event Handling
 
         private void Game_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "Board")
             {
-                PropertyChanged?.Invoke(null, new PropertyChangedEventArgs("Game)"));
+                PropertyChanged?.Invoke(null, new PropertyChangedEventArgs("Game"));
             }
             else if (e.PropertyName == "Dice")
             {
@@ -110,15 +150,20 @@ namespace Chat.Client.VM
                 PropertyChanged?.Invoke(null, new PropertyChangedEventArgs("DiceImage"));
             }
         }
-
-        internal void AnimateDiceRoll()
+        private void ChatResult_MoveRecievedEvent(object sender, EventArgs e)
         {
-            DiceImage = new List<BitmapImage>();
-            DiceImage.Add(_diceImagesList[rand.Next(0,6)]);
-            DiceImage.Add(_diceImagesList[rand.Next(0, 6)]);
-            PropertyChanged?.Invoke(null, new PropertyChangedEventArgs("DiceImage"));
+            string contact = ((MoveEventArgs)e).Contact;
+            int from = ((MoveEventArgs)e).From;
+            int to = ((MoveEventArgs)e).To;
+            App.Current.Dispatcher.Invoke((Action)delegate
+            {
+                Game.MovePiece(from, to, 1);
+                IsWaiting = false;
+            });
+
+
         }
 
-        #endregion Private Methods
+        #endregion Event Handling
     }
 }
