@@ -36,6 +36,7 @@ namespace Chat.UI.Views.Screens
 
         List<int> animatedTriangles;
 
+
         ItemsControl fromControl;
         ItemsControl toControl;
 
@@ -62,7 +63,11 @@ namespace Chat.UI.Views.Screens
             chat_cc.Content = new ChatScreen(VM.PlayerA, VM.PlayerB);
             AddTriangles();
             animatedTriangles = new List<int>();
-            rand = new Random();
+
+            //Seed random to be different between clients
+            int seed = (int)DateTime.Now.Ticks;
+            rand = new Random(seed);
+            
 
             _timer = new DispatcherTimer();
             _timer.Interval = TimeSpan.FromMilliseconds(200);
@@ -144,32 +149,40 @@ namespace Chat.UI.Views.Screens
                 if (VM.PieceToMove == -2)
                 {
                     StopAnimation();
-
+                    List<int> moves = VM.Game.GetPossibleMoves(stackNum);
                     //Animate possible moves
-                    AnimatePossibleMoves(stackNum);
-                    VM.PieceToMove = stackNum;
-                    fromControl = (ItemsControl)sender;
-                    VM.IsWaitingForMove = false;
+                    if (moves.Count != 0)
+                    {
+                        AnimatePossibleMoves(moves);
+                        VM.PieceToMove = stackNum;
+                        fromControl = (ItemsControl)sender;
+                        VM.IsWaitingForMove = false; 
+                    }
                 }
 
                 //Second Click - selected To stack is in the list of possible moves
-                else if (VM.MovesPerPiece.Contains(stackNum))
+                else if (VM.MovesPerPiece != null && VM.MovesPerPiece.Contains(stackNum))
                 {
                     StopAnimation();
                     toControl = (ItemsControl)sender;
 
                     MovePiece(stackNum);
+                    VM.IsWaitingForMove = true;
 
                     if (VM.Game.Dice.Count == 0)
                     {
                         VM.IsWaiting = true;
-                        VM.SendMoveToOtherPlayer(VM.PieceToMove, stackNum);
+                        VM.SendMovesToOtherPlayer();
+                        VM.IsWaitingForMove = false;
                     }
 
                     VM.PieceToMove = -2;
 
+                    if (VM.Game.PossibleMoves.Count == 0)
+                    {
+                        EndTurn();
+                    }
 
-                    VM.IsWaitingForMove = true;
 
                 }
 
@@ -195,7 +208,7 @@ namespace Chat.UI.Views.Screens
             {
                 _timer.Stop();
                 _timerCounter = 0;
-                VM.Game.RollDice();
+                VM.Game.RollDice(rand);
 
                 if (VM.Game.PossibleMoves.Count == 0)
                 {
@@ -279,7 +292,10 @@ namespace Chat.UI.Views.Screens
 
         private void EndTurn()
         {
-            MessageBox.Show("Turn Ended");
+            MessageBox.Show("No possible moves - Turn Ended");
+            VM.IsWaiting = true;
+            VM.SendMovesToOtherPlayer();
+            VM.IsWaitingForMove = false;
         }
 
         private void StartAnimation(int stack, Color color)
@@ -291,7 +307,7 @@ namespace Chat.UI.Views.Screens
                 {
                     BackgammonAnimations.AnimateMouseOverStack(endStackA, color, true);
                 }
-                else if (stack == -2)
+                else if (stack == -1)
                 {
                     BackgammonAnimations.AnimateMouseOverStack(jailA, color, true);
                 }
@@ -311,6 +327,10 @@ namespace Chat.UI.Views.Screens
                 {
                     BackgammonAnimations.AnimateMouseOverStack(endStackA, Colors.LightGreen, false);
                 }
+                else if(stack == -1)
+                {
+                    BackgammonAnimations.AnimateMouseOverStack(jailA, Colors.LightGreen, false);
+                }
                 else
                 {
                     BackgammonAnimations.AnimateMouseOverStack(_triangles[stack], Colors.LightGreen, false);
@@ -319,11 +339,11 @@ namespace Chat.UI.Views.Screens
             animatedTriangles.Clear();
         }
 
-        private void AnimatePossibleMoves(int stackNum)
+        private void AnimatePossibleMoves(List<int> moves)
         {
             if (VM.IsWaitingForMove)
             {
-                List<int> moves = VM.Game.GetPossibleMoves(stackNum);
+                
                 foreach (int stack in moves)
                 {
                     StartAnimation(stack, Colors.LightGreen);

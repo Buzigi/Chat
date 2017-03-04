@@ -1,4 +1,5 @@
-﻿using Contracts;
+﻿using Chat.Contracts;
+using Contracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -86,9 +87,9 @@ namespace Chat.Logic
             MessagesListRecievedEvent?.Invoke(null, new MessageListsEventArgs(messages, reciever));
         }
 
-        public void GetMove(int piece, int moves)
+        public void GetMove(List<Move> moves, string contact)
         {
-            MoveRecievedEvent?.Invoke(null, new MoveEventArgs(piece, moves));
+            MoveRecievedEvent?.Invoke(null, new MoveEventArgs(moves,contact));
         }
 
         public void NewGameResponse(string contact, bool isAccepted)
@@ -147,13 +148,13 @@ namespace Chat.Logic
     public class MoveEventArgs : EventArgs
     {
         public string Contact { get; set; }
-        public int From { get; set; }
-        public int To { get; set; }
 
-        public MoveEventArgs(int from, int to)
+        public List<Move> Moves { get; set; }
+
+        public MoveEventArgs(List<Move> moves, string contact)
         {
-            From = from;
-            To = to;
+            Moves = moves;
+            Contact = contact;
         }
     }
 }

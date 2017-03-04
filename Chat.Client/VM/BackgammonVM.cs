@@ -1,4 +1,5 @@
 ﻿using Backgammon.Logic;
+using Chat.Contracts;
 using Chat.Logic;
 using Chat.UI;
 using System;
@@ -105,9 +106,10 @@ namespace Chat.Client.VM
             PropertyChanged?.Invoke(null, new PropertyChangedEventArgs("DiceImage"));
         }
 
-        internal void SendMoveToOtherPlayer(int fromStack, int toStack)
+        internal void SendMovesToOtherPlayer()
         {
-            ChatClient.SendMove((Guid)Session, fromStack, toStack);
+            Game.Dice.Clear();
+            ChatClient.SendMove((Guid)Session, Game.Moves);
         }
 
         #endregion Public Methods
@@ -153,13 +155,15 @@ namespace Chat.Client.VM
         private void ChatResult_MoveRecievedEvent(object sender, EventArgs e)
         {
             string contact = ((MoveEventArgs)e).Contact;
-            int from = ((MoveEventArgs)e).From;
-            int to = ((MoveEventArgs)e).To;
-            App.Current.Dispatcher.Invoke((Action)delegate
+            if (contact == PlayerB)
             {
-                Game.MovePiece(from, to, 1);
-                IsWaiting = false;
-            });
+                List<Move> moves = ((MoveEventArgs)e).Moves;
+                App.Current.Dispatcher.Invoke((Action)delegate
+                {
+                    Game.MovePieces(moves);
+                    IsWaiting = false;
+                });
+            }
 
 
         }

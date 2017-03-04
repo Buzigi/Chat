@@ -1,10 +1,12 @@
-﻿using Contracts;
+﻿using Chat.Contracts;
+using Contracts;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Backgammon.Logic
@@ -13,7 +15,6 @@ namespace Backgammon.Logic
     {
         #region Properties and Private Fields
 
-        Random rand;
 
         const string MY_COLOR = "White";
 
@@ -28,6 +29,10 @@ namespace Backgammon.Logic
         public ObservableCollection<int> Dice { get; set; }
 
         public int[] Score { get; set; }
+
+
+        //List of moves made by the player
+        public List<Move> Moves { get; set; }
 
         //true = Player can start moving pieces to end stack
         public bool isEndPhase { get; set; }
@@ -48,7 +53,7 @@ namespace Backgammon.Logic
             Score = new int[] { 0, 0 };
             Dice = new ObservableCollection<int> { 1, 1 };
             PossibleMoves = new ObservableCollection<Move>();
-            rand = new Random();
+            Moves = new List<Move>();
             isEndPhase = false;
             SetNewGameBoard();
         }
@@ -59,7 +64,7 @@ namespace Backgammon.Logic
 
         #region Public Methods
 
-        public void RollDice()
+        public void RollDice(Random rand)
         {
             Dice = new ObservableCollection<int>();
             Dice.Add(rand.Next(1, 7));
@@ -69,6 +74,7 @@ namespace Backgammon.Logic
                 Dice.Add(Dice[1]);
                 Dice.Add(Dice[1]);
             }
+            Moves.Clear();
             GetListOfPossibleMoves();
             PropertyChanged(null, new PropertyChangedEventArgs("Dice"));
         }
@@ -80,6 +86,7 @@ namespace Backgammon.Logic
 
         }
 
+        //Logic for moving pieces across the board
         public void MovePiece(int fromstack, int toStack, int player)
         {
             string color;
@@ -93,32 +100,69 @@ namespace Backgammon.Logic
             {
                 color = His_COLOR;
                 hisColor = MY_COLOR;
-                fromstack = 23 - fromstack;
+                if (fromstack != -1)
+                {
+                    fromstack = 23 - fromstack;
+                }
                 toStack = 23 - toStack;
             }
             if (player == 0)
             {
-                RemoveDice(fromstack, toStack);
+                Move newMove = new Move(fromstack, toStack, RemoveDice(fromstack, toStack));
+                Moves.Add(newMove);
             }
-            Board[fromstack].Remove(color);
+
+            //Piece if from jail
+            if (fromstack == -1)
+            {
+                Jail[player].Remove(color);
+            }
+
+            //Piece is on board
+            else
+            {
+                Board[fromstack].Remove(color);
+
+            }
+
+            //Piece goes to end stack
             if (toStack == -2)
             {
                 EndStack[player].Add(color);
                 return;
             }
+
+            //Piece goes to board
             else
             {
                 Board[toStack].Add(color);
             }
+
             //Another player's piece is in the toStack
             if (Board[toStack].Contains(hisColor))
             {
                 Board[toStack].Remove(hisColor);
                 Jail[1 - player].Add(hisColor);
             }
+
+            //There are other moves in the player's turn
             if (Dice.Count != 0)
             {
                 GetListOfPossibleMoves();
+            }
+
+        }
+
+        public void MovePieces(List<Move> moves)
+        {
+            Dice.Clear();
+            foreach (Move move in moves)
+            {
+                Dice.Add(move.Dice);
+            }
+            foreach (Move move in moves)
+            {
+                MovePiece(move.FromStack, move.ToStack, 1);
             }
         }
 
@@ -152,7 +196,7 @@ namespace Backgammon.Logic
             EndStack[1] = new ObservableCollection<string>(); //{ "Black", "Black", "Black" };
         }
 
-        private void RemoveDice(int fromstack, int toStack)
+        private int RemoveDice(int fromstack, int toStack)
         {
             int dice = PossibleMoves.FirstOrDefault(m => m.FromStack == fromstack && m.ToStack == toStack).Dice;
             Dice.Remove(dice);
@@ -161,6 +205,7 @@ namespace Backgammon.Logic
             {
                 GetListOfPossibleMoves();
             }
+            return dice;
         }
 
         private void AddStackToBoard(int index, string color, int numOfPieces)
@@ -259,23 +304,5 @@ namespace Backgammon.Logic
     }
 
     //A move is a piece moving from stack to stack
-    public class Move
-    {
-        //0-23: Board stacks
-        //-1: Jail
-        //-2: End stack
 
-        public int FromStack { get; set; }
-
-        public int ToStack { get; set; }
-
-        public int Dice { get; set; }
-
-        public Move(int from, int to, int dice)
-        {
-            FromStack = from;
-            ToStack = to;
-            Dice = dice;
-        }
-    }
 }

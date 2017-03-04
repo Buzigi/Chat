@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Chat.Contracts;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel;
@@ -32,7 +33,7 @@ namespace Contracts
         void GameRequested(string contact, Guid? session);
 
         [OperationContract(IsOneWay = true)]
-        void GetMove(int piece, int moves);
+        void GetMove(List<Move> moves, string contact);
 
         [OperationContract(IsOneWay = true)]
         void GameEnded(string contact);

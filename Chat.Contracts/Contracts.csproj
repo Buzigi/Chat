@@ -45,6 +45,7 @@
     <Compile Include="IChatResult.cs" />
     <Compile Include="IChatService.cs" />
     <Compile Include="MessageDataContract.cs" />
+    <Compile Include="MoveContract.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UserDataContract.cs" />
   </ItemGroup>

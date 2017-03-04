@@ -8,6 +8,7 @@ using System.Linq;
 using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
+using Chat.Contracts;
 
 namespace Service
 {
@@ -293,7 +294,7 @@ namespace Service
             }
         }
 
-        public void SendMove(Guid session, int pieceIndex, int moves)
+        public void SendMove(Guid session, List<Move> moves)
         {
             try
             {
@@ -301,7 +302,8 @@ namespace Service
                 if (_sessions.ContainsKey(session))
                 {
                     string reciever = _sessionDetails[session][1];
-                    _sessions[session].GetMove(pieceIndex, moves);
+                    string sender = _sessionDetails[session][0];
+                    _sessions[session].GetMove(moves,sender);
                     Report($"Move recieved by {reciever}", LogLevel.Information);
 
                 }

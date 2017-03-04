@@ -49,6 +49,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Backgammon.Logic\Backgammon.Logic.csproj">
+      <Project>{0FF1AC7F-D848-48B2-8DD9-BD5002A4977C}</Project>
+      <Name>Backgammon.Logic</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Chat.Contracts\Contracts.csproj">
       <Project>{84b321e9-f64a-473e-8204-54d4ec130adb}</Project>
       <Name>Contracts</Name>

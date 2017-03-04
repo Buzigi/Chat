@@ -349,8 +349,11 @@ namespace Chat.UI.Views.Screens
 
         private void RequestGame(string contact)
         {
-            Guid? session = (Guid)ChatClient.RequestGame(_mainVM.UserName, contact);
-            _waitingForResponse.Add(contact, session);
+            if (!_waitingForResponse.ContainsKey(contact))
+            {
+                Guid? session = (Guid)ChatClient.RequestGame(_mainVM.UserName, contact);
+                _waitingForResponse.Add(contact, session); 
+            }
         }
 
         private void ActivateGame(string contact, bool isMyTurn, Guid? session = null)

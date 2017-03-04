@@ -1,4 +1,6 @@
-﻿using Contracts;
+﻿using Backgammon.Logic;
+using Chat.Contracts;
+using Contracts;
 using Helpers;
 using System;
 using System.Collections.Generic;
@@ -258,11 +260,11 @@ namespace Chat.Logic
         }
 
         //Send a move played to other player
-        public static void SendMove(Guid session, int fromStack, int toStack)
+        public static void SendMove(Guid session, List<Move> moves)
         {
             try
             {
-                proxy.SendMove(session, fromStack, toStack);
+                proxy.SendMove(session, moves);
                 Report.log(DeviceToReport.Client_Proxy, LogLevel.Information, $"Move sent in session {session}");
             }
             catch (Exception e)

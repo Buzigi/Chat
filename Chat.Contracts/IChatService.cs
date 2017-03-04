@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Chat.Contracts;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -48,7 +49,7 @@ namespace Contracts
         void EndGame(Guid session);
 
         [OperationContract(IsOneWay =true)]
-        void SendMove(Guid session, int pieceIndex, int moves);
+        void SendMove(Guid session, List<Move> moves);
 
         [OperationContract]
         bool RestartGame(Guid session);
