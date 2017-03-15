@@ -42,9 +42,15 @@
         </Grid.ColumnDefinitions>
         <Image Source="/Images/Backgammon_board.jpg" Grid.Column="0" Stretch="Fill" Grid.ColumnSpan="13" Grid.RowSpan="14" Margin="0,0,0,0.16"/>
         <Separator Grid.Column="13" Grid.Row="0" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Grid.RowSpan="14" Margin="2,2,2,2.16"/>
-        <TextBlock Text="{Binding PlayerA}" Grid.Column="14" Grid.Row="1" FontFamily="Buxton Sketch" HorizontalAlignment="Center" FontSize="30" Margin="134,0" Width="34"/>
+        <StackPanel Orientation="Horizontal" Grid.Column="14" Grid.Row="1" Width="150">
+            <TextBlock Text="{Binding PlayerA}" FontFamily="Buxton Sketch" HorizontalAlignment="Center" FontSize="30" Margin="10,0" Width="54"/>
+            <TextBlock Text="{Binding Game.Score[0]}" FontFamily="Buxton Sketch" HorizontalAlignment="Center" FontSize="30" Margin="10,0" Width="54"/>
+        </StackPanel>
         <TextBlock Text="Vs." Grid.Column="14" Grid.Row="2" FontFamily="Buxton Sketch" HorizontalAlignment="Center" FontSize="30" Margin="118,0,116,0" Width="34"/>
-        <TextBlock Text="{Binding PlayerB}" Grid.Column="14" Grid.Row="3" FontFamily="Buxton Sketch" HorizontalAlignment="Center" FontSize="30" Margin="134,0" Width="34"/>
+        <StackPanel Orientation="Horizontal" Grid.Column="14" Grid.Row="3" Width="150">
+            <TextBlock Text="{Binding PlayerB}" FontFamily="Buxton Sketch" HorizontalAlignment="Center" FontSize="30" Margin="10,0" Width="54"/>
+            <TextBlock Text="{Binding Game.Score[1]}" FontFamily="Buxton Sketch" HorizontalAlignment="Center" FontSize="30" Margin="10,0" Width="54"/>
+        </StackPanel>
         <Button Name="rollDice_b" Content="Roll the dice" Grid.Column="14" Grid.Row="6" FontFamily="Buxton Sketch" HorizontalAlignment="Center" FontSize="30" Width="200" Margin="34,0.231,34,11.735" Grid.RowSpan="2" Click="rollDice_b_Click"/>
         <TextBlock Text="Chat:" Grid.Column="14" Grid.Row="8" FontFamily="Buxton Sketch" HorizontalAlignment="Center" FontSize="30" Margin="106,0.265,106,78.51" Grid.RowSpan="2" Width="56" />
         <ContentControl Name="chat_cc" Grid.Column="14" Grid.Row="9" Grid.RowSpan="5" Margin="0,0.265,0,0.16"/>

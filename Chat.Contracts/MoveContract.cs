@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace Chat.Contracts
 {
+
+    //A move is a piece moving from stack to stack
     [DataContract]
     public class Move
     {

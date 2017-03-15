@@ -151,7 +151,16 @@ namespace Chat.Client.VM
                 }
                 PropertyChanged?.Invoke(null, new PropertyChangedEventArgs("DiceImage"));
             }
+            else if (e.PropertyName == "0")
+            {
+                PropertyChanged?.Invoke(null, new PropertyChangedEventArgs("0"));
+            }
+            else if (e.PropertyName == "1")
+            {
+                PropertyChanged?.Invoke(null, new PropertyChangedEventArgs("1"));
+            }
         }
+
         private void ChatResult_MoveRecievedEvent(object sender, EventArgs e)
         {
             string contact = ((MoveEventArgs)e).Contact;

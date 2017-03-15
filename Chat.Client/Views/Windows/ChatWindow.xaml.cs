@@ -33,7 +33,7 @@ namespace Chat.UI.Views.Screens
 
         public event EventHandler WindowClosedEvent;
 
-        public ChatWindow(string contact, bool isGame = false, bool isMyTurn = false,Guid? session = null)
+        public ChatWindow(string contact, bool isGame = false, bool isMyTurn = false, Guid? session = null)
         {
             InitializeComponent();
             _mainVM = MainVM.Instance;
@@ -47,8 +47,9 @@ namespace Chat.UI.Views.Screens
                 this.Height = 700;
                 gameVM = new BackgammonVM(_mainVM.UserName, contact);
                 gameVM.Session = session;
-                gameVM.IsWaiting = isMyTurn;
+                gameVM.IsWaiting = !isMyTurn;
                 chatControl_cc.Content = new BackgammonScreen(gameVM);
+                gameVM.PropertyChanged += GameVM_GameEnded;
             }
             else
             {
@@ -56,10 +57,23 @@ namespace Chat.UI.Views.Screens
                 chatControl_cc.Content = new ChatScreen(_mainVM.UserName, contact);
             }
         }
+
+        private void GameVM_GameEnded(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "0")
+            {
+                EndGame(0);
+            }
+            else if (e.PropertyName == "1")
+            {
+                EndGame(1);
+            }
+        }
+
         private void Window_Closed(object sender, EventArgs e)
         {
             Guid? session;
-            if (gameVM!=null)
+            if (gameVM != null)
             {
                 session = (Guid)gameVM.Session;
             }
@@ -77,6 +91,25 @@ namespace Chat.UI.Views.Screens
         internal void CloseChat()
         {
             this.Close();
+        }
+
+
+        private void EndGame(int player)
+        {
+            string message;
+            if (player == 0)
+            {
+                message = "You Win!";
+                gameVM.IsWaiting = false;
+                gameVM.SendMovesToOtherPlayer();
+            }
+            else
+            {
+                message = "You Lose!";
+                gameVM.IsWaiting = true;
+            }
+            MessageBox.Show(message);
+            chatControl_cc.Content = new BackgammonScreen(gameVM);
         }
     }
 

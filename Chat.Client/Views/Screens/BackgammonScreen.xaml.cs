@@ -88,10 +88,11 @@ namespace Chat.UI.Views.Screens
                 diceControl_ic.ItemsSource = VM.DiceImage;
             }
 
-            if (e.PropertyName == "IsWaiting")
+            else if (e.PropertyName == "IsWaiting")
             {
                 DisplayWaitingScreen(VM.IsWaiting);
             }
+            
         }
 
 
@@ -292,10 +293,10 @@ namespace Chat.UI.Views.Screens
 
         private void EndTurn()
         {
-            MessageBox.Show("No possible moves - Turn Ended");
             VM.IsWaiting = true;
             VM.SendMovesToOtherPlayer();
             VM.IsWaitingForMove = false;
+            MessageBox.Show("No possible moves - Turn Ended");
         }
 
         private void StartAnimation(int stack, Color color)
@@ -378,6 +379,7 @@ namespace Chat.UI.Views.Screens
             Panel.SetZIndex(wait_c, zIndex);
             wait_c.Visibility = vis;
         }
+
 
         #endregion Private Methods
 

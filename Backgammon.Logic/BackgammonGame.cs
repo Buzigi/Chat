@@ -54,7 +54,7 @@ namespace Backgammon.Logic
             Dice = new ObservableCollection<int> { 1, 1 };
             PossibleMoves = new ObservableCollection<Move>();
             Moves = new List<Move>();
-            isEndPhase = false;
+            isEndPhase = true;
             SetNewGameBoard();
         }
 
@@ -66,7 +66,7 @@ namespace Backgammon.Logic
 
         public void RollDice(Random rand)
         {
-            Dice = new ObservableCollection<int>();
+            Dice.Clear();
             Dice.Add(rand.Next(1, 7));
             Dice.Add(rand.Next(1, 7));
             if (Dice[0] == Dice[1])
@@ -86,16 +86,20 @@ namespace Backgammon.Logic
 
         }
 
-        //Logic for moving pieces across the board
-        public void MovePiece(int fromstack, int toStack, int player)
+        //Logic for moving pieces across the board. If returns false, game is over
+        public bool MovePiece(int fromstack, int toStack, int player)
         {
             string color;
             string hisColor;
+
+            //The currect user turn
             if (player == 0)
             {
                 color = MY_COLOR;
                 hisColor = His_COLOR;
             }
+
+            //The other player's turn
             else
             {
                 color = His_COLOR;
@@ -104,8 +108,13 @@ namespace Backgammon.Logic
                 {
                     fromstack = 23 - fromstack;
                 }
-                toStack = 23 - toStack;
+                if (toStack != -2)
+                {
+                    toStack = 23 - toStack;
+                }
             }
+
+            //Add move of current user to list of moves
             if (player == 0)
             {
                 Move newMove = new Move(fromstack, toStack, RemoveDice(fromstack, toStack));
@@ -129,21 +138,28 @@ namespace Backgammon.Logic
             if (toStack == -2)
             {
                 EndStack[player].Add(color);
-                return;
             }
 
             //Piece goes to board
             else
             {
                 Board[toStack].Add(color);
+
+                //Another player's piece is in the toStack
+                if (Board[toStack].Contains(hisColor))
+                {
+                    Board[toStack].Remove(hisColor);
+                    Jail[1 - player].Add(hisColor);
+                }
             }
 
-            //Another player's piece is in the toStack
-            if (Board[toStack].Contains(hisColor))
+
+            if (IsWin(player))
             {
-                Board[toStack].Remove(hisColor);
-                Jail[1 - player].Add(hisColor);
+                return true;
             }
+
+            CanPlayerMoveToEndStack();
 
             //There are other moves in the player's turn
             if (Dice.Count != 0)
@@ -151,7 +167,9 @@ namespace Backgammon.Logic
                 GetListOfPossibleMoves();
             }
 
+            return false;
         }
+
 
         public void MovePieces(List<Move> moves)
         {
@@ -162,7 +180,11 @@ namespace Backgammon.Logic
             }
             foreach (Move move in moves)
             {
-                MovePiece(move.FromStack, move.ToStack, 1);
+                bool isWin = MovePiece(move.FromStack, move.ToStack, 1);
+                if (isWin)
+                {
+                    return;
+                }
             }
         }
 
@@ -176,7 +198,14 @@ namespace Backgammon.Logic
         {
             for (int i = 0; i < 24; i++)
             {
-                Board[i] = new ObservableCollection<string>();
+                if (Board[i] == null)
+                {
+                    Board[i] = new ObservableCollection<string>(); 
+                }
+                else
+                {
+                    Board[i].Clear();
+                }
             }
 
             AddStackToBoard(23, MY_COLOR, 2);
@@ -188,12 +217,18 @@ namespace Backgammon.Logic
             AddStackToBoard(11, His_COLOR, 5);
             AddStackToBoard(16, His_COLOR, 3);
             AddStackToBoard(18, His_COLOR, 5);
+
+
             PropertyChanged?.Invoke(null, new PropertyChangedEventArgs("Board"));
 
-            Jail[0] = new ObservableCollection<string>(); // { "White", "White" };
-            Jail[1] = new ObservableCollection<string>(); //{ "Black", "Black", "Black" };
-            EndStack[0] = new ObservableCollection<string>(); //{ "White", "White", "White" };
-            EndStack[1] = new ObservableCollection<string>(); //{ "Black", "Black", "Black" };
+            Dice = new ObservableCollection<int>();
+
+            Jail[0] = new ObservableCollection<string>();
+            Jail[1] = new ObservableCollection<string>();
+            EndStack[0] = new ObservableCollection<string>();
+            EndStack[1] = new ObservableCollection<string>();
+
+            isEndPhase = true;
         }
 
         private int RemoveDice(int fromstack, int toStack)
@@ -277,6 +312,7 @@ namespace Backgammon.Logic
                 //No Player's pieces in jail
                 else
                 {
+                    Move toEndStack = null;
                     for (int j = 0; j < 24; j++)
                     {
                         //Stack is not empty and contains Player's pieces
@@ -290,19 +326,55 @@ namespace Backgammon.Logic
                             //If end stack is available
                             else if (isEndPhase && j - diceRoll < 0)
                             {
-                                PossibleMoves.Add(new Move(j, -2, diceRoll));
+                                toEndStack = new Move(j, -2, diceRoll);
                             }
                         }
+                    }
+                    if (toEndStack != null)
+                    {
+                        PossibleMoves.Add(toEndStack);
                     }
                 }
             }
         }
 
+        //Checks if all the players pieces are at "Home". If true, the player can move pieces to the End stack
+        private void CanPlayerMoveToEndStack()
+        {
+            int piecesAtHome = EndStack[0].Count;
+            for (int i = 0; i < 6; i++)
+            {
+                if (Board[i].Contains(MY_COLOR))
+                {
+                    piecesAtHome += Board[i].Count;
+                }
+            }
+            if (piecesAtHome == 15)
+            {
+                isEndPhase = true;
+            }
+            else
+            {
+                isEndPhase = false;
+            }
+        }
+
+        //Check if the player won
+        private bool IsWin(int player)
+        {
+            if (EndStack[player].Count >= 15)
+            {
+                Score[player] += 1;
+                PropertyChanged?.Invoke(null, new PropertyChangedEventArgs(player.ToString()));
+                SetNewGameBoard();
+                return true;
+            }
+            return false;
+        }
 
         #endregion Private Methods
 
     }
 
-    //A move is a piece moving from stack to stack
 
 }
