@@ -19,8 +19,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Backgammon.Logic", "Backgam
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chat.Logic", "Chat.Logic\Chat.Logic.csproj", "{C2393DBC-60C2-4AD7-B985-5E8CC683E0C4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientB", "ClientB\ClientB.csproj", "{D60BE4E1-4977-4C42-99DA-79E91325E87B}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,10 +57,6 @@ Global
 		{C2393DBC-60C2-4AD7-B985-5E8CC683E0C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C2393DBC-60C2-4AD7-B985-5E8CC683E0C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C2393DBC-60C2-4AD7-B985-5E8CC683E0C4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D60BE4E1-4977-4C42-99DA-79E91325E87B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D60BE4E1-4977-4C42-99DA-79E91325E87B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D60BE4E1-4977-4C42-99DA-79E91325E87B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D60BE4E1-4977-4C42-99DA-79E91325E87B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
